@@ -183,6 +183,38 @@ ul.assume b{color:var(--fg);font-weight:500}
 .stt .bb{display:block;font-size:10px;color:var(--good)}
 .stt .fh{color:var(--fg)}
 .lckc{color:var(--good);font-weight:600}
+
+/* planner */
+.h3{font-family:var(--display);font-size:13px;letter-spacing:.06em;color:var(--gold);margin:14px 0 6px}
+.plgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px}
+@media (max-width:900px){.plgrid{grid-template-columns:minmax(0,1fr)}}
+.plcol{min-width:0}
+.plbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.plbtns select{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font-family:var(--body)}
+#setTbl th{vertical-align:bottom}
+#setTbl .sname{width:100%;min-width:70px;max-width:110px;font-family:var(--body);font-size:12px;text-align:left}
+#setTbl .act{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;justify-content:flex-end;margin-top:2px}
+#setTbl .sdel{font-size:10px;padding:0 5px;margin-top:2px}
+.rules{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:6px;counter-reset:r}
+.rules li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 8px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:13px;counter-increment:r}
+.rules li::before{content:counter(r);grid-row:span 2;font-family:var(--mono);color:var(--gold);font-size:12px;min-width:1.2em}
+.rules .rt{display:none}
+.rules .rb{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;min-width:0}
+.rules .rx{grid-row:span 2;display:flex;gap:3px}
+.rules .rx button{padding:1px 6px;font-size:12px}
+.rules .rr{grid-column:2;font-size:12px;color:var(--muted)}
+.rules .rr .ok{color:var(--good)} .rules .rr .no{color:var(--bad)}
+.rules select,.rules input{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:2px 5px;font-size:13px;font-family:var(--mono);max-width:100%}
+.rules input{width:64px}
+.rules select{font-family:var(--body);max-width:190px}
+.plres{max-width:760px}
+.plcmp table{min-width:0}
+.plcmp td.best{background:color-mix(in srgb,var(--good) 14%,transparent)}
+.plcmp td.nm img{width:22px;height:22px;border-radius:4px;vertical-align:middle;margin-right:7px}
+.tgl{background:none;border:0;padding:0;display:inline-flex;align-items:center;gap:6px;color:var(--gold);cursor:pointer}
+.tgl:hover{border:0}
+.tgl .chev{font-size:14px;width:1em;color:var(--gold)}
+#cmpTgl{margin-top:10px}
 </style>
 <div id="app"></div>
 <script>
@@ -218,7 +250,7 @@ add('Combo3',{type:'Passive',desc:'เพิ่มการโจมตีปก
     if(has('SkySlasher')&&c>12)return{items:[dmg('SkySlasher (ชาร์จเกิน 12 วิ)',{atk:5})]};
     return{items:k?[dmg(`ชาร์จ ${c} วิ`,{atk:1,n:k})]:[info('ยังชาร์จไม่ถึง 2 วิ',0,'dmg')]}}}));
 [30,50].forEach((v,i)=>add('Perseverance'+(i+1),{type:'Passive',desc:`เพิ่มระยะเวลาของสถานะทางบวกขึ้น ${v}%`}));
-[6,12,18,24].forEach((v,i)=>add('DoubleArt'+(i+1),{type:'Passive',desc:`ให้โอกาส ${v}% ที่หมาป่าใช้สกิลสาย A/B โดยไม่มี cooldown`}));
+[1,2,3,4].forEach((n,i)=>add('DoubleArt'+(i+1),{type:'Passive',desc:X=>`ให้โอกาส ${5*Math.max(1,[1,2,3,4].filter(k=>X.has('DoubleArt'+k)).length)}% ที่หมาป่าใช้สกิลสาย A/B โดยไม่มี cooldown (โค้ด: 5% × จำนวน DoubleArt ที่อัพ · PDF เขียน ${6*n}%)`}));
 /* A */
 [[-4,4,.1],[-6,6,.2],[-8,8,.3],[-10,10,.4]].forEach(([mp,p,sp],i)=>add('BraveSpirit'+(i+1),{mp,cd:30,desc:`หมาป่าและเพื่อนรอบตัว 15 tm เพิ่มความเสียหายที่ทำได้ ${p}% และความเร็ววิ่ง ${sp} ts (valor${i+1}, 15 sec)`,buffs:[{n:'valor'+(i+1),b:15,pos:1}],
   calc:()=>{const lv=i+1+(has('GloriousSpirit')?2:0);return{items:[info('ดาเมจเพิ่ม',2+2*lv,'%',`valor${lv}${has('GloriousSpirit')?' (GloriousSpirit +2)':''}`)]}}}));
@@ -411,8 +443,8 @@ add('ClumblingMountain1',{type:'Passive',desc:'ClimbingCliff ตอนมี sp 
 [[6,3,-4,10],[9,6,-6,12]].forEach(([d,e,mp,sp_],i)=>add('DrunkenFist'+(i+1),{mp,sp:sp_,cd:30,desc:`หมุนตัว (0.4 × atk) + talAdjust(${d}) แล้วหมัดเมา (0.4 × atk) + talAdjust(${e}) × 3`,buffs:X=>[X.hi('DrunkenPlus',2)?{n:'drunken'+X.hi('DrunkenPlus',2),b:12,pos:1}:null,X.has('DrunkenSpin')?{n:'drunk1',b:12,neg:1}:null],calc:()=>({items:[dmg('หมุนตัว',{atk:0.4,tal:d}),dmg('หมัดเมา',{atk:0.4,tal:e,n:3})].concat(sf())})}));
 [5,10].forEach((p,i)=>add('DrunkenPlus'+(i+1),{type:'Passive',desc:`DrunkenFist ทำให้เมา ดาเมจ −10% แต่โอกาสหลบ ${p}% (drunken${i+1}, 12 sec)`}));
 const tt=()=>[[has('TimeAndTide')?1.5:1,'TimeAndTide (ส่วน tal)']];
-[[10,5,12],[20,10,16]].forEach(([d,ko,sp_],i)=>add('WaterMonkey'+(i+1),{sp:sp_,cd:30,desc:`หมุนหลบแล้วชก (0.5 × atk) + talAdjust(${d}) × 2 และ ${ko} ko × 2 · โอกาสหลบ 50%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2})].concat(sf())})}));
-[[10,14],[20,18]].forEach(([d,sp_],i)=>add('WaterCrane'+(i+1),{sp:sp_,cd:30,desc:`กระโดดหมุนเตะรอบตัว 4 tm (0.5 × atk) + talAdjust(${d}) × 2 · โอกาสหลบ 50%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2,aoe:1})].concat(sf())})}));
+[[10,5,12],[20,10,16]].forEach(([d,ko,sp_],i)=>add('WaterMonkey'+(i+1),{sp:sp_,cd:30,desc:X=>`หมุนหลบแล้วชก (0.5 × atk) + talAdjust(${d}) × 2 และ ${ko} ko × 2 · โอกาสหลบ ${X.has('TimeAndTide')?100:50}%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2})].concat(sf())})}));
+[[10,14],[20,18]].forEach(([d,sp_],i)=>add('WaterCrane'+(i+1),{sp:sp_,cd:30,desc:X=>`กระโดดหมุนเตะรอบตัว 4 tm (0.5 × atk) + talAdjust(${d}) × 2 · โอกาสหลบ ${X.has('TimeAndTide')?100:50}%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2,aoe:1})].concat(sf())})}));
 [[10,-10,10,3],[15,-15,15,5]].forEach(([d,mp,sp_,du],i)=>add('StasisBlow'+(i+1),{mp,sp:sp_,cd:30,desc:`สะกัดจุด (0.4 × atk) + talAdjust(${d}) dmg · เป้าที่วิ่ง/ยืนนิ่งติด paralysis1 (${du} sec)`,buffs:[{n:'paralysis1',b:du,neg:1}],calc:()=>({items:[dmg('ดาเมจ',{atk:0.4,tal:d})].concat(sf())})}));
 [[15,20,-15,18],[25,40,-20,24]].forEach(([d,c,mp,sp_],i)=>add('DeathBlow'+(i+1),{mp,sp:sp_,cd:30,desc:`สะกัดจุดตาย (0.4 × atk) + talAdjust(${d}) dmg และโอกาส ((${c} / hp เป้าหมาย) × 100)% ตายทันที`,calc:()=>({items:[dmg('ดาเมจ',{atk:0.4,tal:d})].concat(sf())})}));
 [3,6,9,12].forEach((e,i)=>add('ShadowFist'+(i+1),{type:'Passive',desc:`โจมตีปกติและสาย B ซ้อนอีก 1 ครั้ง ${e} effDmg`}));
@@ -430,7 +462,7 @@ P('nineSteps','ThreeStep และ RushingFalcon เพิ่มดาเมจ�
 P('DrunkenSpin','ศัตรูที่โดน DrunkenFist ติด drunk1 (ควบคุมกลับด้าน, 12 sec)');
 P('AuraField','ขณะชาร์จ เพื่อนรอบตัว 8 tm ฟื้น (0.015 × atk) sp/sec (min 1, max 3)',{calc:()=>({items:[info('ให้เพื่อน',Math.min(3,Math.max(1,0.015*X.st.atk)),'sp/s')]})});
 P('QiBurst','QiStrike ยิงเป็นเส้นตรง 6 tm และ delayQi +3 วิ');
-P('TimeAndTide','WaterMonkey และ WaterCrane ดาเมจส่วน tal +50% และเพิ่มโอกาสหลบ 50%');
+P('TimeAndTide','WaterMonkey และ WaterCrane ดาเมจส่วน tal +50% และโอกาสหลบตอนใช้สกิลเปลี่ยนจาก 50% เป็น 100% (ก่อนคิด lck)');
 add('RollAround',{mp:-6,sp:-24,cd:60,desc:'หลุดสถานะขังไม่เกินระดับ 5 กลิ้ง 6 วิ ป้องกันดาเมจปกติ effect damage และสถานะลบทั้งหมด (CD ร่วม Roll)',buffs:[{n:'rollAround',b:6,fixed:1}]});
 P('OgreImpact','Pummel กว้าง/ไกล +3/2 tm และ +(0.1 × atk) + talAdjust(5) × 5 · TowerRush ระยะ +3 tm และ +(0.25 × atk) + talAdjust(15)');
 P('WindWalker','StasisBlow/DeathBlow วาร์ปจากระยะ 6–16 tm ไปสะกัดจุดได้ทันที');
@@ -452,8 +484,8 @@ sample:{lvl:70,base:{atk:30,def:20,agi:80,vit:30,int:40,cha:70,tal:80,lck:20},ow
 options:[
  {id:'charge',label:'เวลาชาร์จ (วินาที)',type:'number',def:3,min:0,max:30,note:'cAttack'},
  {id:'tMhp',label:'mhp เป้าหมาย',type:'number',def:1000,min:0,note:'OverHeal max'},
- {id:'seal',label:'บัฟจากเสาตรา',type:'select',def:'none',choices:[['none','ไม่มี'],['atk','SealOfAttack +10%'],['earth','SealOfEarth +15%'],['heaven','SealOfHeaven +5%']]}],
-hooks:{dmgMul(s,X){const m={atk:1.1,earth:1.15,heaven:1.05}[X.opt.seal];return m?[[m,'seal']]:[]}},
+ {id:'seal',label:'บัฟจากเสาตรา',type:'select',def:'none',choices:[['none','ไม่มี'],['atk','SealOfAttack +0.10'],['earth','SealOfEarth +0.05'],['heaven','SealOfHeaven +0.15']]}],
+hooks:{dmgMul(s,X){const m={atk:1.1,earth:1.05,heaven:1.15}[X.opt.seal];return m?[[m,'seal']]:[]}},
 derived:X=>{const b=X.hi('Benediction',3);return[['Benediction',b?`ฮีล/OverHeal +${15*b}%`:'–'],['Gospel',X.has('Gospel')?'Bless CD พื้นฐาน 30 วิ, +1 ระดับ':'–']]},
 notes:['<b>Sheep:</b> สกิลฮีลแสดงเป็น hp ที่ฟื้น (talAdjust × Benediction) · OverHeal +15/30/45% ดาเมจพื้นฐานแต่ไม่เกิน 30%/40% ของ mhp เป้าหมาย',
  'cAttack: (+atk) dmg ต่อวินาทีที่ชาร์จ จนถึง max 100/200/300/400 · Benediction ทำให้ชาร์จเร็วขึ้น 20/40/60% (คิดเป็นเวลาชาร์จที่สั้นลง) · LightBurst +100 และระเบิด 40% รอบเป้า'],
@@ -485,9 +517,9 @@ add('Revert1',{mp:-50,sp:-50,cd:900,cast:6,desc:'ฟื้นฟู hp mp แล
 /* B */
 [[6,-10,18,2],[12,-14,22,2.5],[18,-18,26,3],[24,-22,30,3.5]].forEach(([e,mp,cd,ct],i)=>add('LightBind'+(i+1),{mp,cd,cast:ct,desc:`ศรแสงตรึงเป้าหมาย ${e} effDmg/sec (lightBind${i+1}, 3 sec)`,
   buffs:X=>[{n:'lightBind'+Math.min(5,i+1+(X.has('IntenseBind')?1:0)),b:3+(X.has('IntenseBind')?1:0),neg:1}],
-  calc:()=>{const lv=Math.min(5,i+1+(has('IntenseBind')?1:0)),ee=[6,12,18,24,30][lv-1],du=(3+(has('IntenseBind')?1:0))*(1+0.015*X.st.cha);return{items:[eff(`lightBind${lv} ต่อวินาที`,ee,Math.floor(du),`${ee} effDmg × ${Math.floor(du)} วิ (${X.f2(du)} วิ)`)]}}}));
+  calc:()=>{const lv=Math.min(5,i+1+(has('IntenseBind')?1:0)),ee=[6,12,18,24,30][lv-1],du=(3+(has('IntenseBind')?1:0))*X.durK();return{items:[eff(`lightBind${lv} ต่อวินาที`,ee,Math.floor(du),`${ee} effDmg × ${Math.floor(du)} วิ (${X.f2(du)} วิ)`)]}}}));
 [[4,1,-10,15,2],[8,2,-14,18,3],[12,3,-18,21,4],[16,4,-22,24,5]].forEach(([h,m,mp,cd,ct],i)=>add('Illuminate'+(i+1),{mp,cd,cast:ct,desc:`ฟื้น ${h} hp, ${m} mp และ ${m} sp ทุก 3 วิ (illuminate${i+1}, 12 sec)`,
-  buffs:X=>[{n:'illuminate'+(i+1+(X.has('BlindingLight')?2:0)),b:12,pos:1}],calc:()=>{const lv=i+1+(has('BlindingLight')?2:0),hh=4*lv,mm=lv,du=12*(1+0.015*X.st.cha),n=Math.floor(du/3);return{items:[info(`ต่อ 3 วิ (lv${lv})`,hh,'hp',`${hh} hp, ${mm} mp, ${mm} sp${lv>4?' (ประมาณ)':''}`),info(`รวม ${n} ครั้ง`,hh*n,'hp')]}}}));
+  buffs:X=>[{n:'illuminate'+(i+1+(X.has('BlindingLight')?2:0)),b:12,pos:1}],calc:()=>{const lv=i+1+(has('BlindingLight')?2:0),hh=4*lv,mm=lv,du=12*X.durK(),n=Math.floor(du/3);return{items:[info(`ต่อ 3 วิ (lv${lv})`,hh,'hp',`${hh} hp, ${mm} mp, ${mm} sp${lv>4?' (ประมาณ)':''}`),info(`รวม ${n} ครั้ง`,hh*n,'hp')]}}}));
 [[5,.25,-6,15,2],[10,.5,-12,18,3]].forEach(([w,s,mp,cd,ct],i)=>{add('FeatherWeight'+(i+1),{mp,cd,cast:ct,desc:`เป้าหมายน้ำหนัก −${w} tg ความเร็ว +${s} ts (feather${i+1}, 15 sec)`,buffs:X=>[{n:(X.has('FloatingWing')?'wing':'feather')+(i+1),b:15,pos:1}]});
   add('AllFeather'+(i+1),{mp:-18-6*i,cd:60,cast:4+i,desc:`แกะและเพื่อนรอบตัว 12 tm น้ำหนัก −${w} tg ความเร็ว +${s} ts (feather${i+1}, 15 sec)`,buffs:X=>[{n:(X.has('FloatingWing')?'wing':'feather')+(i+1),b:15,pos:1}]})});
 [[30,-16,3],[50,-24,4]].forEach(([d,mp,ct],i)=>add('DivinitySword'+(i+1),{mp,cd:45,cast:ct,desc:`ดาบแสงปักเป้าหมาย talAdjust(${d}) dmg และ 5 ko`,calc:()=>({items:[dmg('ดาเมจ',{tal:d})]})}));
@@ -518,7 +550,7 @@ add('BookBash',{mp:-1,sp:-5,cd:60,desc:'ฟาดหนังสือ (0.5 × a
 P('Purify','Clear/Cleanse ระยะสถานะเป็น 6 วิ และ +1 ระดับ');
 add('edenSanctuary',{mp:-40,sp:-40,cd:240,desc:'ใช้ขณะเสาตราแสดงผล สร้างวิหาร (รัศมี 18 tm, 12 sec, cha ไม่มีผล) ทุกคนในเขตลดดาเมจที่ได้รับ 50% (sanctury5, 3 sec) ทุก 2 วิ',buffs:[{n:'sanctury5',b:12,fixed:1}]});
 add('WorldEncarta',{mp:-50,sp:-50,cd:150,cast:7,desc:'กลุ่มหนังสือคุ้มครอง (worldEncarta5, 9 sec) เพิ่ม def 20% ของ atk แกะ และ (atk) dmg/0.5 sec รอบตัว 2 tm · cooldown เริ่มต้น 150 วิ',buffs:[{n:'worldEncarta5',b:9,pos:1}],
-  calc:()=>{const du=9*(1+0.015*X.st.cha);return{items:[dmg(`ต่อ 0.5 วิ (${Math.floor(du/0.5)} ครั้ง)`,{atk:1,n:Math.floor(du/0.5),aoe:1}),info('def เพิ่ม',0.2*X.st.atk,'def','20% atk')]}}});
+  calc:()=>{const du=9*X.durK();return{items:[dmg(`ต่อ 0.5 วิ (${Math.floor(du/0.5)} ครั้ง)`,{atk:1,n:Math.floor(du/0.5),aoe:1}),info('def เพิ่ม',0.2*X.st.atk,'def','20% atk')]}}});
 }});
 
 TT.def('bat',{
@@ -533,10 +565,10 @@ options:[
  {id:'blindLv',label:'blindLv + confuseLv',type:'number',def:0,min:0,note:'Chiroptophobia'}],
 hooks:{
  casts(s,X){if(!X.opt.mass||!X.hi('massCast',2))return 1;const ok=(s.cls==='A'||s.cls==='B'||(s.cls==='C'&&X.has('AutoMass')))&&s.type==='Active'&&!s.self;return ok?Math.min(6,X.opt.enemies):1},
- dmgMul(s,X){const t=X.hi('AmplifyDamage',4);return X.opt.amp&&t?[[1+0.05*t,'amplifyDamage'+t]]:[]},
+ hitMul(s,X){const t=X.hi('AmplifyDamage',4);return X.opt.amp&&t?[[0.05*t,'amplifyDamage'+t]]:[]},
  cdMul(s,X){return s.curse&&X.hi('ShadowMastery',2)?[0,'ShadowMastery ไม่มี CD']:null}},
 derived:X=>[['massCast',X.hi('massCast',2)?(X.opt.mass?`×${Math.min(6,X.opt.enemies)} เป้า (สาย A/B)`:'ปิดอยู่'):'ยังไม่ได้อัพ'],['ShadowMastery',X.hi('ShadowMastery',2)?'คำสาปสาย A ไม่มี CD':'–']],
-notes:['<b>Bat:</b> massCast คูณจำนวนเป้าหมาย (สูงสุด 6 ตามจำนวนศัตรูในระยะ) ให้สกิล Active สาย A/B · amplifyDamage คูณดาเมจที่ไม่ใช่ effDmg',
+notes:['<b>Bat:</b> massCast คูณจำนวนเป้าหมาย (สูงสุด 6 ตามจำนวนศัตรูในระยะ) ให้สกิล Active สาย A/B · amplifyDamage เพิ่ม hitMod ของเป้า +0.05×lv (คูณหลัง def, ไม่มีผลกับ effDmg)',
  'ShadowMastery ทำให้สกิลคำสาปสาย A (PhantomBane, Dissolute, Corruption, Curse, Doom) ไม่มี cooldown · Doom ระยะสถานะลดลงตาม cha ที่สูงกว่าเป้าหมาย (ยังไม่มีสูตร)'],
 skills(X){const {add,dmg,eff,info,tal,has,hi}=X;const f1=X.f1;
 add('nAttack',{type:'-',cd:1.5,fixed:true,always:true,desc:'โจมตีปกติ (0.5 × atk) dmg และ 1 ko',calc:()=>{const n=1+hi('Combo',2);return{items:[dmg(`ต่อครั้ง (${n} ครั้ง)`,{atk:0.5,n:has('Combo3')?n+2:n})],notes:has('Combo3')?['Combo3: ครั้งที่ 3 ยิง 3 ลูกแยก 3 ทิศ (CD 2 วิ)']:[]}}});
@@ -549,18 +581,18 @@ const drain=(k,mn,mx,u)=>{const lv=Math.min(3,(k)+(has('DarkIntention')?1:0));co
 /* A */
 const sm=()=>hi('ShadowMastery',2);
 [[9,-10,2,4],[15,-13,2.5,8],[21,-16,3,12],[27,-19,3.5,16]].forEach(([e,mp,ct,h],i)=>add('phantomBane'+(i+1),{mp,cd:30,cast:ct,curse:1,desc:`คำสาป ${e} effDmg ทุก 2 วิ (phantomBane${i+1}, 12 sec) และ ${h} hate`,buffs:X=>[{n:'phantomBane'+(i+1),b:12+(X.has('DemonBane')?6:0),neg:1}],
-  calc:()=>{const lv=Math.min(6,i+1+(has('DemonBane')?1:0)),ee=[9,15,21,27,33,39][lv-1],du=(12+(has('DemonBane')?6:0))*(1+0.015*X.st.cha);return{items:[eff(`ต่อ 2 วิ (lv${lv})`,ee,Math.floor(du/2),`${ee} effDmg × ${Math.floor(du/2)} ครั้งใน ${X.f2(du)} วิ`)],notes:has('DemonBane')?['DemonBane +1 ระดับ, +6 วิ (ระดับ 5–6 ประมาณจากขั้นละ +6)']:[]}}}));
+  calc:()=>{const lv=Math.min(6,i+1+(has('DemonBane')?1:0)),ee=[9,15,21,27,33,39][lv-1],du=(12+(has('DemonBane')?6:0))*X.durK();return{items:[eff(`ต่อ 2 วิ (lv${lv})`,ee,Math.floor(du/2),`${ee} effDmg × ${Math.floor(du/2)} ครั้งใน ${X.f2(du)} วิ`)],notes:has('DemonBane')?['DemonBane +1 ระดับ, +6 วิ (ระดับ 5–6 ประมาณจากขั้นละ +6)']:[]}}}));
 [24,36,48,60].forEach((d,i)=>add('ShadowGaze'+(i+1),{mp:-11-4*i,cd:X=>X.has('DemonGaze')?20:30,desc:`ใช้เนตรราตรีจ้องเป้าหมาย talAdjust(${d}) dmg`,calc:()=>({items:[dmg('ดาเมจ',{tal:d+(has('DemonGaze')?12:0)})]})}));
 [[3,-13,1.5],[4,-19,2]].forEach(([lv,mp,ct],i)=>add('Dissolute'+(i+1),{mp,cd:60,cast:ct,curse:1,desc:`ลบสถานะบวกไม่เกินระดับ ${lv+(0)} และกันติดสถานะบวก (dissolute${i+1}, 6 sec)`,buffs:[{n:'dissolute'+(i+1),b:6,neg:1}]}));
 [[30,4,-15,3,5],[45,9,-23,4,10]].forEach(([e,s,mp,ct,h],i)=>add('Corruption'+(i+1),{mp,cd:60,cast:ct,curse:1,desc:`เป้าหมายรับ ${e} effDmg และเสีย ${s} sp ทุกครั้งที่โจมตี (corruption${i+1}, 15 sec)`,buffs:[{n:'corruption'+(i+1),b:15,neg:1}],calc:()=>({items:[eff('ต่อครั้งที่เป้าโจมตี',e)]})}));
 [[6,-7,3],[9,-11,4],[12,-15,5],[16,-19,6]].forEach(([v,mp,ct],i)=>add('Curse'+(i+1),{mp,cd:120,cast:ct,curse:1,desc:`ลด stat ทุกอย่างของเป้าหมาย ${v} (curse${i+1}, 15 sec) และ ${10*(i+1)} hate`,buffs:[{n:'curse'+(i+1),b:15,neg:1}],calc:()=>{const lv=i+1+(has('DarkStalker')?1:0)+sm();return{items:[info('ลด stat (ระดับ)',[6,9,12,16,20,24,28][lv-1]||v,'',`curse${lv}${lv>4?' (ประมาณ)':''}`)]}}}));
 [[40,2,-17],[60,3,-21]].forEach(([d,n,mp],i)=>add('Echoes'+(i+1),{mp,sp:-13,cd:60,desc:`ยิงลูกเวท 3 ลูกติดตามศัตรู talAdjust(${d}) dmg สะท้อนไปศัตรูตัวอื่นได้ลูกละ ${n} ครั้ง`,calc:()=>({items:[dmg('ต่อครั้งที่โดน',{tal:d,n:3*Math.min(n,X.opt.enemies)})]})}));
-[[44,-35,-30,4,9],[66,-45,-40,5,9]].forEach(([d,mp,sp,ct,du],i)=>add('Nightmare'+(i+1),{mp,sp,cd:180,cast:ct,desc:`ขังเป้าหมาย ${d} dmg ทุก 2 วิ ไม่คิด def หลบไม่ได้ (nightmare${i+1}, ${du} sec)`,buffs:[{n:'nightmare'+(i+1),b:du,neg:1}],calc:()=>{const t=du*(1+0.015*X.st.cha);return{items:[dmg(`ต่อ 2 วิ (${Math.floor(t/2)} ครั้ง)`,{flat:d,n:Math.floor(t/2),nodef:1})]}}}));
+[[44,-35,-30,4,9],[66,-45,-40,5,9]].forEach(([d,mp,sp,ct,du],i)=>add('Nightmare'+(i+1),{mp,sp,cd:180,cast:ct,desc:`ขังเป้าหมาย ${d} dmg ทุก 2 วิ ไม่คิด def หลบไม่ได้ (nightmare${i+1}, ${du} sec)`,buffs:[{n:'nightmare'+(i+1),b:du,neg:1}],calc:()=>{const t=du*X.durK();return{items:[dmg(`ต่อ 2 วิ (${Math.floor(t/2)} ครั้ง)`,{flat:d,n:Math.floor(t/2),nodef:1})]}}}));
 [5,10,15,20].forEach((p,i)=>add('AmplifyDamage'+(i+1),{type:'Passive',desc:`ศัตรูที่โดนโจมตีปกติ/ท่าชาร์จ รับดาเมจเพิ่ม ${p}% (amplifyDamage${i+1}, 3 sec)`,buffs:[{n:'amplifyDamage'+(i+1),b:3,neg:1}]}));
 [[300,-35,4],[450,-40,5]].forEach(([e,mp,ct],i)=>add('Doom'+(i+1),{mp,cd:180,cast:ct,curse:1,desc:`ติด doom${i+1} (60 sec, cha ค้างคาวยิ่งสูงกว่าเป้ายิ่งสั้น) หมดเวลาโดน ${e} effDmg และ 300 hate`,calc:()=>{const lv=i+1+sm();return{items:[eff(`doom${lv}`,[300,450,666,999][lv-1]||999)]}}}));
 [1,2].forEach((n,i)=>add('ShadowMastery'+(i+1),{type:'Passive',desc:`สกิลคำสาปสาย A ไม่มี cooldown และร่ายซ้ำเพิ่มระดับสถานะได้อีก ${n} ขั้น`}));
 [[99,-70,-35,10,30],[165,-90,-45,13,60]].forEach(([d,mp,sp,ct,du],i)=>add('GuardianOftheNight'+(i+1),{mp,sp,cd:600,cast:ct,desc:`เรียก Shade4 (guardianOfTheNight${i+1}, ${du} sec) ทุก 2.5 วิ: ศัตรูไม่เกิน 16 tm โดน ${d} dmg × 2 · 16–32 tm โอกาส 50% ร่าย Curse/Nightmare (Shade cha 128)`,buffs:[{n:'guardianOfTheNight'+(i+1),b:du,pos:1}],
-  calc:()=>{const t=du*(1+0.015*X.st.cha);return{items:[dmg('ต่อ 2.5 วิ',{flat:d,n:2})],notes:[`ราว ${Math.floor(t/2.5)} รอบใน ${X.f2(t)} วิ`]}}}));
+  calc:()=>{const t=du*X.durK();return{items:[dmg('ต่อ 2.5 วิ',{flat:d,n:2})],notes:[`ราว ${Math.floor(t/2.5)} รอบใน ${X.f2(t)} วิ`]}}}));
 /* B */
 [[5,-11,1.5],[11,-15,2],[17,-19,2.5],[23,-23,3]].forEach(([e,mp,ct],i)=>add('MirageOrb'+(i+1),{mp,cd:30,cast:ct,desc:`ลูกพลังเวทล่องหน (30 sec) ${e} effDmg ทุก 0.5 วิ ครบ 11 ครั้งหายไป (สูงสุด 4 ลูก)`,calc:()=>({items:[eff('ต่อ 0.5 วิ (11 ครั้ง)',e+(has('DistantOrb')?12:0),11,`${e}${has('DistantOrb')?' + 12 DistantOrb':''} effDmg`)]})}));
 [[1,50,-21,2],[2,50,-29,3],[1,25,-37,4],[1,0,-45,5]].forEach(([n,p,mp,ct],i)=>add('ShadowIllusion'+(i+1),{mp,cd:60,cast:ct,desc:`ร่างมายา ${n} ร่าง (60 sec) ดาเมจน้อยกว่าร่างจริง ${p}% รับดาเมจมากกว่า 80%`,buffs:[{n:'ร่างมายา',b:60,pos:1}],calc:()=>({items:[dmg('โจมตีปกติร่างมายา',{atk:0.5,mul:[[1-p/100,'ร่างมายา']],n})]})}));
@@ -690,17 +722,17 @@ options:[
 hooks:{
  stats(st,X){if(X.opt.fortune){const t=X.hi('FateDraw',4);if(t)st.lck+=10*(t+(X.has('LadyLuck')?1:0))}},
  dmgMul(s,X){const d=String(X.opt.hpDigit),map={'1':['PowerOne1',.1],'2':['PowerTwo1',.2],'3':['PowerThree1',.3],'7':['PowerSeven1',.7]};
-   if(X.has('SuperSeven')&&X.opt.has7&&X.has('PowerSeven1'))return[[1.7,'PowerSeven (SuperSeven)']];
-   const m=map[d];return m&&X.has(m[0])?[[1+m[1],m[0]]]:[]}},
+   if(X.has('SuperSeven')&&X.opt.has7&&X.has('PowerSeven1'))return[[1.7,'PowerSeven (SuperSeven)','raw']];
+   const m=map[d];return m&&X.has(m[0])?[[1+m[1],m[0],'raw']]:[]}},
 derived:X=>{const t=X.hi('FateDraw',4),lv=t+(X.has('LadyLuck')?1:0);return[['fortune',t?`ระดับ ${lv} = +${10*lv} lck${X.opt.fortune?'':' (ปิดอยู่)'}`:'ยังไม่ได้อัพ FateDraw'],['lck − lck เป้าหมาย',X.f1(Math.max(0,X.st.lck-X.opt.tLck))]]},
 notes:['<b>Cat:</b> ค่าสุ่ม (LuckyCard, LuckyDice) แสดงเป็นช่วงต่ำสุด–สูงสุด · NoChance ทำให้โจมตีปกติ +0.3×lck คงที่',
  'PowerOne/Two/Three/Seven คูณทุกดาเมจตามเลขท้าย hp ที่เลือก · fortune ระดับ n = +10n lck (LadyLuck +1 ระดับ และ +15 วิ)',
  'HiddenBlade บวกกับโจมตีปกติเมื่อเลือก “โจมตีจากด้านหลัง” (JaggedKnife +1 ระดับ) · BackStab ×2 กับ ForwardLunge/ReverseThrust จากด้านหลัง'],
 skills(X){const {add,dmg,eff,info,tal,has,hi}=X;const f1=X.f1;
-const nAdd=()=>{const a=[];if(has('NoChance'))a.push([0.3*X.st.lck,'NoChance 0.3×lck']);const hb=hi('HiddenBlade',4);if(hb&&X.opt.back){const lv=hb+(has('JaggedKnife')?1:0);a.push([tal(10*lv),`HiddenBlade talAdjust(${10*lv})`])}return a};
+const nAdd=()=>{const a=[];const hb=hi('HiddenBlade',4);if(hb&&X.opt.back){const lv=hb+(has('JaggedKnife')?1:0);a.push([tal(10*lv),`HiddenBlade talAdjust(${10*lv})`])}return a};
 const wound=()=>has('OpenWound')&&X.opt.wound?[eff('OpenWound',30*((hi('DisArmed',2))+(hi('Bleed',2))),1,`30 × (disarmLv ${hi('DisArmed',2)} + bleedLv ${hi('Bleed',2)})`)]:[];
 add('nAttack',{type:'-',cd:1.5,fixed:true,always:true,desc:'โจมตีปกติ (0.5 × atk) dmg และ 1 ko · ต่อด้วยคอมโบที่อัพไว้',
-  calc:()=>{const a=nAdd(),it=[dmg('ครั้งที่ 1',{atk:0.5,add:a})];if(has('Combo1'))it.push(dmg('ครั้งที่ 2',{atk:0.5,add:a}));if(has('Combo2')){it.push(dmg('ครั้งที่ 3-1',{atk:0.3,add:a}));it.push(dmg('ครั้งที่ 3-2',{atk:0.4,add:a}))}if(has('Combo3')){it.push(dmg('ครั้งที่ 4-1',{atk:0.2,add:a}));it.push(dmg('ครั้งที่ 4-2',{atk:0.6,add:a}))}return{items:it.concat(wound())}}});
+  calc:()=>{const a=nAdd(),nc=has('NoChance')?{post:[0.3*X.st.lck,'NoChance 0.3×lck'],noRand:1}:{},it=[dmg('ครั้งที่ 1',Object.assign({atk:0.5,add:a},nc))];if(has('Combo1'))it.push(dmg('ครั้งที่ 2',Object.assign({atk:0.5,add:a},nc)));if(has('Combo2')){it.push(dmg('ครั้งที่ 3-1',Object.assign({atk:0.3,add:a},nc)));it.push(dmg('ครั้งที่ 3-2',Object.assign({atk:0.4,add:a},nc)))}if(has('Combo3')){it.push(dmg('ครั้งที่ 4-1',Object.assign({atk:0.2,add:a},nc)));it.push(dmg('ครั้งที่ 4-2',Object.assign({atk:0.6,add:a},nc)))}return{items:it.concat(wound())}}});
 add('Combo1',{type:'Passive',desc:'การโจมตีปกติครั้งที่ 2 (0.5 × atk) dmg และ 1 ko'});
 add('Combo2',{type:'Passive',desc:'ครั้งที่ 3 เป็นโจมตีต่อเนื่อง 2 ครั้ง (0.3 × atk) และ (0.4 × atk)'});
 add('Combo3',{type:'Passive',desc:'ครั้งที่ 4 เป็นโจมตีต่อเนื่อง 2 ครั้ง (0.2 × atk) และ (0.6 × atk)'});
@@ -746,7 +778,7 @@ add('Vendetta1',{type:'Passive',desc:'ได้ 10 sp ทุกครั้ง�
 [[180,-45,120],[270,-60,180]].forEach(([d,sp,cd],i)=>add('DeltaStrike'+(i+1),{mp:-30,sp,cd,desc:`ตัดห้วงมิติสามเหลี่ยม (0.5 × atk) × 6 แล้วปิดท้าย (0.5 × atk) + talAdjust(${d}) · noForce1 และ lock1 3 sec (cha ไม่มีผล)`,buffs:[{n:'noForce1',b:3,fixed:1},{n:'lock1',b:3,fixed:1}],calc:()=>({items:[dmg('ตัด',{atk:0.5,n:6,aoe:1}),dmg('ปิดท้าย',{atk:0.5,tal:d,aoe:1})]})}));
 /* C */
 const P=(id,desc,o={})=>add(id,Object.assign({type:'Passive',desc},o));
-P('NoChance','lck ที่ใช้เพิ่มดาเมจโจมตีปกติไม่สุ่มอีกต่อไป เป็น (0.3 × lck) dmg เสมอ');
+P('NoChance','โจมตีปกติไม่ใช้ luck สุ่ม แต่บวก (0.3 × lck) หลังคูณ damageMod แทน: ⌈0.3×lck + ดิบ×damageMod⌉');
 P('Joker','LuckyCard เพิ่ม (0.5 × (lck แมว − lck เป้าหมาย)) dmg และโอกาส 6% ติด doom1');
 P('ThreeKnives','FlyingDagger ปา 3 เล่มพร้อมกัน และเพิ่มดาเมจเล่มละ talAdjust(6)');
 P('SuperFocus','ชาร์จติด damagePlus5: +50 dmg ต่อฮิต (+2 hit/วิ สูงสุด 6 hit, 12 sec)');
@@ -780,7 +812,7 @@ options:[
  {id:'mmp',label:'MMP เพนกวิน',type:'number',def:400,note:'MpTransfer / ManaSurge'}],
 hooks:{
  casts(s,X){if(!s.mc)return 1;const m=+X.opt.mc;return m===3&&X.has('TripleCast')?3:m===2&&X.has('DoubleCast')?2:1},
- dmgMul(s,X){if(s.focus===false||s.type==='Passive'||s.cls==='basic')return[];return X.has('FocusIntellect')&&X.opt.focus&&X.st.int>100?[[1+(X.st.int-100)/100,'FocusIntellect']]:[]}},
+ dmgMul(s,X){if(s.focus===false||s.type==='Passive'||s.cls==='basic')return[];return X.has('FocusIntellect')&&X.opt.focus&&X.st.int>100?[[1+(X.st.int-100)/100,'FocusIntellect','raw']]:[]}},
 derived:X=>[['FocusIntellect',X.st.int>100?'× '+X.f2(1+(X.st.int-100)/100):'ไม่ทำงาน (int ≤ 100)']],
 notes:['<b>Penguin:</b> FrostSpike เพิ่ม HP โล่ = เลเวล (สมมติ) · ManaVortex โดน 30 ครั้งใน 60 วิ · Tornado: ระยะบังคับ 6 วิ คิด cha แล้ว tick = ⌊ระยะ ÷ 0.35⌋','Multi-cast ใช้กับสาย A/B (และสาย C เมื่อมี DoubleSpell) · FocusIntellect คูณ (1 + (int−100)%)'],
 skills(X){const {add,dmg,eff,info,tal,has,hi}=X;const f1=X.f1,f2=X.f2;
@@ -824,7 +856,7 @@ add('ArcticFrost1',{type:'Passive',desc:'โอกาส 20% ที่ ArcticWin
 [[3,-10,2,1,9],[5,-15,3,2,12]].forEach(([n,mp,ct,ice,r],i)=>add('IceBlock'+(i+1),{mp,cd:90,cast:ct,desc:`กำแพงน้ำแข็ง ${n} ก้อน (6 sec + อีก 6 sec ไม่คิด cha) ศัตรูในระยะ ${r} tm ติด ice${ice}`,buffs:[{n:'กำแพง',b:6,plus:6},{n:'ice'+ice,b:2}]}));
 [[50,-20,4,6],[100,-27,6,10]].forEach(([h,mp,ct,du],i)=>add('Snowman'+(i+1),{mp,cd:90,cast:ct,desc:`เปลี่ยนเป้าหมายเป็นตุ๊กตาหิมะ (talAdjust(${h}) hp) รับดาเมจแทน`,buffs:[{n:'snowman'+(i+1),b:du}],calc:()=>({items:[info('HP ตุ๊กตา',tal(h),'hp',X.talF(h))]})}));
 [[10,-36,4,1],[20,-48,6,2],[30,-60,8,3]].forEach(([d,mp,ct,r],i)=>add('Tornado'+(i+1),{mp,cd:120,cast:ct,desc:`พายุ (รัศมี ${r} tm) บังคับได้ 6 วิ (คิด cha) ทำ talAdjust(${d}) dmg ทุก 0.35 วิ`,buffs:[{n:'พายุ',b:6}],
-  calc:()=>{const lo=6*(1+0.015*X.st.cha),hi_=6*(1+0.015*(X.st.cha+X.bmax)),n=Math.floor(lo/0.35+1e-9),nh=Math.floor(hi_/0.35+1e-9);
+  calc:()=>{const lo=Math.trunc(6*X.durK()+1e-9),hi_=Math.trunc(6*(1+0.015*X.clamp(X.st.cha+X.bmax,1,512))+1e-9),n=Math.floor(lo/0.35+1e-9),nh=Math.floor(hi_/0.35+1e-9);
     return{items:[dmg(`ต่อ tick (${f2(lo)} วิ ÷ 0.35)`,{tal:d,n})],notes:nh>n?[`ถ้าได้ bonus จาก lck สูงสุด: ${f2(hi_)} วิ = ${nh} tick`]:[]}}}));
 add('Typhoon1',{type:'Passive',desc:'ล็อกเป้าหมายด้วย Tornado แล้วกลายเป็น Typhoon ไล่ตามเอง หายไปเมื่อทำดาเมจถึง talAdjust(100/200/300)',
   calc:()=>{const t=hi('Tornado',3)||1,v=[100,200,300][t-1];return{items:[info(`เพดาน Typhoon (Tornado${t})`,tal(v),'dmg',X.talF(v))]}}});
@@ -858,13 +890,12 @@ name:'Mole',th:'ตุ่น',icon:'TNT4',focus:'TNT4',defaultDT:'SynchroMole2',
 sub:{basic:'Engineer',A:'Bomber',B:'Machinist',C:'War Machine'},
 sample:{lvl:70,base:{atk:50,def:30,agi:70,vit:30,int:10,cha:30,tal:70,lck:20},own:['Combo1','Combo2','Combo3','Combo4','Dig1','Gadgeteer1','Gadgeteer2','StatPlus1','StatPlus2','Mine1','Mine2','Mine3','Mine4','MortarShot1','MortarShot2','Bunker1','TNT1','TNT2','TNT3','TNT4','StunMine1','FlameTurret1','FlameTurret2','FireBarrage1','AutoGyroGun1','AutoGyroGun2','AutoGyroGun3','AutoGyroGun4','SpeedDrill1','BarrelBot1','BarrelBot2','MegaPunch1','CannonExpert','MineLover','HiddenTurret','RevisedSkill','Napalm','RevisedArt','SuperTNT']},
 options:[
- {id:'synchro',label:'บัฟ synchroMole',type:'check',def:false,text:'ทำงานอยู่',warn:X=>X.opt.synchro&&!X.hi('SynchroMole',2)?'ยังไม่ได้อัพ SynchroMole':''},
- {id:'superTnt',label:'SuperTNT บวกแบบ',type:'select',def:'post',choices:[['post','ค่าตรงหลัง talAdjust'],['pre','ก่อน talAdjust (คูณ tal)']],note:'ยังไม่ยืนยัน'},
+ {id:'synchro',label:'บัฟ synchroMole',type:'check',def:false,text:'ทำงานอยู่',warn:X=>X.opt.synchro&&!X.hi('SynchroMole',2)?'ยังไม่ได้อัพ SynchroMole':''}, 
  {id:'charge',label:'เวลาใช้ท่าชาร์จ (SkyShaker)',type:'number',def:3,min:0,max:30,note:'วินาที'}],
 hooks:{},
 derived:X=>{const b=moleBot(X),g=moleGyro(X);return[['BarrelBot',b?`atk ${X.f1(b.atk)} · tal ${X.f1(b.tal)}`:'ยังไม่ได้อัพ'],['AutoGyroGun',g?`atk ${X.f1(g.atk)}`:'ยังไม่ได้อัพ']]},
 notes:['<b>Mole:</b> สกิลที่ BarrelBot ใช้คำนวณจาก stat ของหุ่น (atk/tal ตามขั้น BarrelBot + DoubleBot 50% Lv + SynchroMole) ส่วนท่าของตุ่นเองใช้ stat ตุ่น',
- 'TNT แต่ละขั้นใช้ดาเมจของตัวเอง · SuperTNT บวก 20/30/40/50% ของเลเวลตาม TNT1–4 (ยังไม่ยืนยันว่าบวกก่อนหรือหลัง talAdjust เลือกได้ในช่องด้านขวา)',
+ 'TNT (จากโค้ด): tntLv = จำนวน TNT ที่อัพ ใช้ดาเมจ talAdjust(10×tntLv + 20) ทุกปุ่ม · SuperTNT บวก ⌊(0.1×tntLv + 0.1) × Lv⌋ ก่อน talAdjust',
  'ระยะป้อมปืน/FlameTurret คิด cha (ยืนยันแล้ว) · ดาเมจที่ระบุ “ไม่คิด def” ไม่โดนช่อง % ลดดาเมจ'],
 skills(X){const {add,dmg,eff,info,tal,has,hi}=X;const f1=X.f1;
 const ss=()=>has('SmartShell1')?[eff('SmartShell',30,1,'+30 effDmg')]:[];
@@ -882,13 +913,13 @@ add('Gadgeteer4',{type:'Passive',desc:'Workshop lv.4: S.BarrelBot1 (+5 tal) · M
   calc:()=>({items:[dmg('ต่อศัตรู',{tal:d,mul:[[has('MineLover')?1.25:1,'MineLover']],aoe:1})].concat(ss())})}));
 [[3,-12],[5,-15]].forEach(([n,sp],i)=>add('MortarShot'+(i+1),{sp,cd:30,desc:`ยิงปืนใหญ่ ${n} นัด ระเบิด 4 tm (0.5 × atk) + talAdjust(15) × ${n} (min 50%) · ×2 ใส่สิ่งก่อสร้าง`,calc:()=>({items:[dmg('ต่อนัด',{atk:0.5,tal:15,min:0.5,n,aoe:1})]})}));
 [[50,-5],[75,-10]].forEach(([p,sp],i)=>add('Bunker'+(i+1),{sp,cd:30,desc:`มุดหลุมหลบภัย ลดความเสียหายที่ได้รับ ${p}% (ยกเว้น effect damage) ป้องกัน ko`}));
-[30,40,50,60].forEach((d,i)=>add('TNT'+(i+1),{sp:-10,cd:90,desc:`กดสวิตช์ระเบิดข้างหน้า ${8*2**i} tm รัศมี 4 tm talAdjust(${d}) dmg และ 5 ko (min 50%) · cooldown แยกกับ TNT อื่น`,
-  calc:()=>{const st=has('SuperTNT')?[.2,.3,.4,.5][i]*X.lvl:0,mode=X.opt.superTnt;const o={tal:d,min:0.5,aoe:1};if(st){if(mode==='pre')o.tal=d+st;else o.add=[[st,`SuperTNT ${[20,30,40,50][i]}% Lv`]]}return{items:[dmg('ต่อศัตรู',o)]}}}));
+[30,40,50,60].forEach((d,i)=>add('TNT'+(i+1),{sp:-10,cd:90,desc:`กดสวิตช์ระเบิดข้างหน้า ${8*2**i} tm รัศมี 4 tm และ 5 ko (min 50%) · ดาเมจตามจำนวน TNT ที่อัพ: talAdjust(10 × tntLv + 20) · cooldown แยกกับ TNT อื่น`,
+  calc:()=>{const lv=[1,2,3,4].filter(k=>has('TNT'+k)).length||i+1,st=has('SuperTNT')?Math.floor((0.1*lv+0.1)*X.lvl):0;return{items:[dmg(`tntLv ${lv}`,{tal:10*lv+20+st,min:0.5,aoe:1})],notes:st?[`SuperTNT บวกก่อน talAdjust: ⌊(0.1×${lv} + 0.1) × Lv⌋ = ${st}`]:[]}}}));
 [[10,-5],[20,-10]].forEach(([ko,mp],i)=>add('StunMine'+(i+1),{mp,cd:X=>X.has('MineLover')?23:45,desc:`กับระเบิดสตั้น ทำ 0 dmg และ ${ko} ko (ยังมีโอกาสเพิ่มดาเมจจาก lck)`,
   calc:()=>({items:[info('ko',ko*(has('MineLover')?1.25:1)+(has('GranadeCluster')?10:0),'ko',`${ko}${has('MineLover')?' × 1.25 MineLover':''}${has('GranadeCluster')?' + 10 GranadeCluster':''}`)].concat(ss())})}));
 [[10,-5,-10],[20,-15,-15]].forEach(([ko,mp,sp],i)=>add('StunGrenade'+(i+1),{mp,sp,cd:60,desc:`ปาระเบิดสตั้น 6 tm ทำ 0 dmg และ ${ko} ko`,calc:()=>({items:[info('ko',ko+(has('GranadeCluster')?10:0),'ko',`${ko}${has('GranadeCluster')?' + 10 GranadeCluster':''}`)].concat(ss())})}));
 [[5,-24],[10,-28],[15,-32]].forEach(([d,sp],i)=>add('FlameTurret'+(i+1),{sp,cd:120,desc:`ป้อมปืนไฟ (5 sec) พ่นไฟข้างหน้า 12 tm talAdjust(${d}) dmg ทุก 0.25 วิ (ไม่คิด def, ไม่โดนเครื่องจักร/สิ่งก่อสร้าง)`,buffs:[{n:'ป้อมปืนไฟ',b:5}],
-  calc:()=>{const du=5*(1+0.015*X.st.cha),n=Math.floor(du/0.25+1e-9);return{items:[dmg(`ต่อ tick (${X.f2(du)} วิ ÷ 0.25)`,{tal:d,n,nodef:1})]}}}));
+  calc:()=>{const du=5*X.durK(),n=Math.floor(du/0.25+1e-9);return{items:[dmg(`ต่อ tick (${X.f2(du)} วิ ÷ 0.25)`,{tal:d,n,nodef:1})]}}}));
 [[15,-10,20,3],[25,-15,30,5]].forEach(([d,mp,sp,r],i)=>add('FireBarrage'+(i+1),{mp,sp,cd:120,desc:`วางพลุสัญญาณ เรียกเครื่องบินยิงรัศมี ${r} tm talAdjust(${d}) dmg × 4 และ 1 ko × 4`,calc:()=>({items:[dmg('ต่อนัด',{tal:d,n:4,aoe:1})]})}));
 [[25,5,-20,35],[40,15,-30,55]].forEach(([d,n,mp,sp],i)=>add('Bombardment'+(i+1),{mp,sp,cd:180,desc:`วางพลุสัญญาณ เรียกเครื่องบินทิ้งระเบิด ${n} ลูก (รัศมี 4 tm) talAdjust(${d}) dmg × ${n}`,calc:()=>({items:[dmg('ต่อลูก',{tal:d,n,aoe:1})]})}));
 [1,2,3].forEach((v,i)=>add('ExtraPowder'+(i+1),{type:'Passive',desc:`ขยายรัศมีระเบิดของโจมตีปกติและสกิลระเบิดสาย A ขึ้น ${v} tm`}));
@@ -896,8 +927,8 @@ add('SmartShell1',{type:'Passive',desc:'Mine, StunMine, StunGrenade และ Ti
 [[150,-45],[250,-60]].forEach(([d,v],i)=>add('TimeNuke'+(i+1),{mp:v,sp:v,cd:360,desc:`ระเบิดเวลา 60 วิ ระเบิดวงกว้าง 20 tm talAdjust(${d}) dmg × 4 และ 3 ko × 4 (min 20%)`,calc:()=>({items:[dmg('ต่อครั้ง',{tal:d,min:0.2,n:4,aoe:1})].concat(ss())})}));
 add('Detonate1',{mp:-24,sp:-24,cd:360,desc:'ทำให้ TimeNuke ระเบิดทันที แต่ดาเมจลดลง ((เวลาที่เหลือ / 60) × 100)%'});
 /* B */
-[[50,10,-10,2,12],[100,20,-15,3,16],[150,30,-20,4,20],[200,40,-25,5,24]].forEach(([hp,all,mp,ct,r],i)=>add('AutoGyroGun'+(i+1),{mp,sp:-10,cd:30,cast:ct,span:X=>120*(1+0.015*X.st.cha),desc:`ป้อมปืน (mhp ${hp}, allStat ${all}, 120 sec) ยิงศัตรูในระยะ ${r} tm (atk ป้อม) dmg และ 1 ko ทุก 2 วิ`,buffs:[{n:'ป้อมปืน',b:120}],
-  calc:()=>{const g=moleGyro(X,i+1);const du=120*(1+0.015*X.st.cha),n=Math.floor(du/2);const it=dmg(`ต่อนัด (ทุก 2 วิ ตลอด ${X.f2(du)} วิ)`,{atk:1,S:g,SL:'ป้อม ',n});return{items:[it],notes:[`ป้อม atk ${f1(g.atk)} · รวมคือดาเมจถ้าป้อมยิงครบทั้งอายุ (ยิงต่อเนื่องเมื่อมีศัตรูในระยะ)`]}}}));
+[[50,10,-10,2,12],[100,20,-15,3,16],[150,30,-20,4,20],[200,40,-25,5,24]].forEach(([hp,all,mp,ct,r],i)=>add('AutoGyroGun'+(i+1),{mp,sp:-10,cd:30,cast:ct,span:X=>120*X.durK(),desc:`ป้อมปืน (mhp ${hp}, allStat ${all}, 120 sec) ยิงศัตรูในระยะ ${r} tm (atk ป้อม) dmg และ 1 ko ทุก 2 วิ`,buffs:[{n:'ป้อมปืน',b:120}],
+  calc:()=>{const g=moleGyro(X,i+1);const du=120*X.durK(),n=Math.floor(du/2);const it=dmg(`ต่อนัด (ทุก 2 วิ ตลอด ${X.f2(du)} วิ)`,{atk:1,S:g,SL:'ป้อม ',n});return{items:[it],notes:[`ป้อม atk ${f1(g.atk)} · รวมคือดาเมจถ้าป้อมยิงครบทั้งอายุ (ยิงต่อเนื่องเมื่อมีศัตรูในระยะ)`]}}}));
 [[0.5,3.5],[1,5]].forEach(([s,v],i)=>add('SpeedDrill'+(i+1),{type:'Passive',desc:`ท่าชาร์จลดเวลาขุดดิน ${s} วิ และความเร็วดำดินเป็น ${v} ts`}));
 [[20,4],[30,8]].forEach(([d,ko],i)=>add('SkyDrill'+(i+1),{type:'Passive',desc:`ชาร์จเกิน 3 วิ แล้วพุ่งขึ้นจากพื้น (0.5 × atk) + talAdjust(${d}) × 2 และ ${ko} ko × 2`,
   calc:()=>{const it=[dmg('ต่อครั้ง',{atk:0.5,tal:d,n:2,aoe:1})];if(has('SkyShaker'))it.push(dmg('SkyShaker',{flat:8+(+X.opt.charge||0),aoe:1}));return{items:it}}}));
@@ -940,12 +971,11 @@ add('WarCapital',{mp:-100,sp:-50,cd:300,cast:24,desc:'ฐานยิงจร�
 function moleBot(X,tier){const t=tier||X.hi('BarrelBot',4);if(!t)return null;const atk=[15,30,45,60][t-1],tl=[10,20,30,40][t-1],db=X.has('DoubleBot')?0.5*X.lvl:0,sy=X.opt.synchro?[0,.5,1][X.hi('SynchroMole',2)]*X.st.tal:0;return{atk:atk+db+sy,tal:tl+db}}
 function moleGyro(X,tier){const t=tier||X.hi('AutoGyroGun',4);if(!t)return null;const base=X.has('HiddenTurret')?[.25,.5,.75,1][t-1]*X.lvl:[10,20,30,40][t-1];const sy=X.opt.synchro?[0,.5,1][X.hi('SynchroMole',2)]*X.st.tal:0;return{atk:base+sy,tal:X.has('HiddenTurret')?[.125,.25,.375,.5][t-1]*X.lvl:[10,20,30,40][t-1]}}
 
-TT.def('chameleon',{
+TT.def('chameleon',{ownCrit:true,
 name:'Chameleon',th:'กิ้งก่า',icon:'QuickFire4',focus:'QuickFire4',defaultDT:'FatalStrike4',
 sub:{basic:'Hunter',A:'Trickster',B:'Slayer',C:'Thunder Dragon'},
 sample:{lvl:70,base:{atk:70,def:20,agi:80,vit:30,int:10,cha:40,tal:50,lck:30},own:['quickShot1','quickShot2','quickShot3','cAttack1','cAttack2','Immunity1','FarReach1','FarReach2','StatPlus1','StatPlus2','FarReach3','QuickFire1','QuickFire2','QuickFire3','QuickFire4','PerfectBlend1','PerfectBlend2','NeedlePrison1','MassShot1','PoisonArrow1','PoisonArrow2','IncreasedPoison1','FatalStrike1','FatalStrike2','FatalStrike3','FatalStrike4','CriticalPlus1','CriticalPlus2','CriticalPlus3','CriticalPlus4','LeftStride1','RightStride1','CampFire1','BugSlayer1','BowMastery','AddedFire','ExtraArrows','RevisedSkill','SilentWalk','BullsEye5','RevisedArt','MassHouseLock']},
 options:[
- {id:'crit',label:'แสดง critical',type:'select',def:'avg',choices:[['avg','ค่าเฉลี่ยตามโอกาส'],['none','ไม่ติด crit'],['all','ติด crit ทุกครั้ง']],note:'CriticalPlus / BullsEye'},
  {id:'fatal',label:'บัฟ fatalStrike',type:'check',def:true,text:'ทำงานอยู่',warn:X=>X.opt.fatal&&!X.hi('FatalStrike',4)?'ยังไม่ได้อัพ FatalStrike':''},
  {id:'poisonLv',label:'ระดับพิษบนเป้า',type:'number',def:2,min:0,max:6,note:'PiercingVenom'},
  {id:'charge',label:'เวลาชาร์จ (วินาที)',type:'number',def:3,min:0,max:30,note:'cAttack'},
@@ -953,7 +983,7 @@ options:[
  {id:'mark',label:'เป้าหมายติด slayerMark',type:'check',def:false,note:'MarkofSlayer'}],
 hooks:{},
 derived:X=>{const c=chamCrit(X);return[['critical',c.p?`โอกาส ${c.p}% (คิด lck แล้ว) · +${c.bonus}% ดาเมจ`:'ยังไม่ได้อัพ CriticalPlus'],['quickShot',X.hi('quickShot',4)?`CD ${[1.5,1.2,0.9,0.6,0.3][X.hi('quickShot',4)]} วิ`:'CD 1.5 วิ']]},
-notes:['<b>Chameleon:</b> critical คิดเฉพาะโจมตีปกติ: ดาเมจ × (1 + 1.8) หรือ × (1 + 2.4) กับ BullsEye · โหมดค่าเฉลี่ย = 1 + โอกาส × โบนัส',
+notes:['<b>Chameleon:</b> critical ของกิ้งก่า = CriticalPlus + crit อุปกรณ์ แล้วคิด lck · โหมดผลสุ่มเฉลี่ย = 1 + โอกาส × โบนัส (ยังคิดเป็นตัวคูณทั้งก้อน ไม่ใช่เฉพาะ atk)',
  'FatalStrike บวกดาเมจตรงให้โจมตีปกติ 5 ครั้ง (ExtraArrows 10 ครั้ง, +1 ระดับ) · PiercingVenom +6 × poisonLv (DeadlyVenom 12 ×) ให้โจมตีปกติและท่าชาร์จ',
  'Slayer: ประเภทตรง ×2 · ImprovedSlayer บวกดาเมจเพิ่มตามขั้น · MarkofSlayer ให้ทุกเป้าหมายถือว่าประเภทตรง'],
 skills(X){const {add,dmg,eff,info,tal,has,hi}=X;const f1=X.f1;
@@ -1019,7 +1049,7 @@ P('DeadlyVenom','พิษระยะพื้นฐาน 18 วิ สะส�
 add('MarkofSlayer',{mp:-45,sp:-45,cd:150,cast:7,desc:'เป้าหมายรับดาเมจจาก Slayer/AllSlayer เหมือนประเภทตรง (slayerMark5, 30 sec)',buffs:[{n:'slayerMark5',b:30,neg:1}]});
 add('ThunderDragon',{mp:-50,sp:-50,cd:90,desc:'ห่อหุ้มสายฟ้า (3 sec, cha ไม่มีผล) ช็อตรอบตัว 3 tm 50 effDmg/0.5 sec โอกาส 12% paralysis1 · ศัตรูที่ตีโดนสวนกลับ 350 effDmg · cooldown เริ่มต้น 90 วิ',buffs:[{n:'thunderDragon',b:3,fixed:1}],calc:()=>({items:[eff('ต่อ 0.5 วิ (6 ครั้ง)',50,6),eff('สวนกลับต่อครั้ง',350)]})});
 }});
-function chamCrit(X){const t=X.hi('CriticalPlus',4),p=t?X.chance([8,12,16,20][t-1]):0,bonus=X.has('BullsEye5')?240:180;const m=X.opt.crit;
+function chamCrit(X){const t=X.hi('CriticalPlus',4),base=(t?[8,12,16,20][t-1]:0)+(+X.opt.critEq||0),p=base?X.chance(base):0,bonus=X.has('BullsEye5')?240:180;const m=X.opt.roll==='min'?'none':X.opt.roll==='max'?'all':'avg';
   if(!p||m==='none')return{p,bonus,mul:1,label:'crit'};if(m==='all')return{p,bonus,mul:1+bonus/100,label:'critical'};return{p,bonus,mul:1+p/100*bonus/100,label:`crit เฉลี่ย ${p}%`}}
 
 TT.def('whale',{
@@ -1075,7 +1105,7 @@ add('KnightOfTheDeep',{type:'Passive',desc:'ขณะติด kingdomKnight ส
 [[20,-8,3,1],[30,-12,3.5,2],[40,-16,4,3],[50,-20,4.5,4]].forEach(([d,mp,ct,ko],i)=>add('HydroBlast'+(i+1),{mp,cd:60,cast:ct,desc:`ระเบิดน้ำพุใส่เป้าหมาย (น้ำหนักเป้าหมาย) + talAdjust(${d}) dmg และ ${ko} ko`,
   calc:()=>({items:[dmg('ดาเมจ',{flat:+X.opt.tWeight||0,tal:d+(has('SpiralBlast')?20:0)})]})}));
 [[12,.004,-10,4],[18,.008,-14,4.5],[24,.012,-18,5],[30,.016,-22,5.5]].forEach(([b,k,mp,ct],i)=>add('Rejuvenate'+(i+1),{mp,cd:90,cast:ct,desc:`ฟื้นฟู ${b} + (${k} × mhp) hp ทุก 4 วิ (rejuvenate${i+1}, 18 sec)`,buffs:[{n:'rejuvenate'+(i+1),b:18,pos:1}],
-  calc:()=>{const lv=Math.min(4,i+1+(has('Revitalize')?1:0)),bb=[12,18,24,30][lv-1],kk=[.004,.008,.012,.016][lv-1],v=bb+kk*X.opt.mhp,du=18*(1+0.015*X.st.cha);return{items:[info('ฟื้นต่อ 4 วิ',v,'hp',`${bb} + ${kk} × mhp ${X.opt.mhp}${has('Revitalize')?' (Revitalize +1)':''}`),info('รวมตลอดสถานะ',v*Math.floor(du/4),'hp',`${Math.floor(du/4)} ครั้งใน ${X.f2(du)} วิ`)]}}}));
+  calc:()=>{const lv=Math.min(4,i+1+(has('Revitalize')?1:0)),bb=[12,18,24,30][lv-1],kk=[.004,.008,.012,.016][lv-1],v=bb+kk*X.opt.mhp,du=18*X.durK();return{items:[info('ฟื้นต่อ 4 วิ',v,'hp',`${bb} + ${kk} × mhp ${X.opt.mhp}${has('Revitalize')?' (Revitalize +1)':''}`),info('รวมตลอดสถานะ',v*Math.floor(du/4),'hp',`${Math.floor(du/4)} ครั้งใน ${X.f2(du)} วิ`)]}}}));
 [[1,-12,5],[1.5,-15,10]].forEach(([k,sp,ko],i)=>add('WhaleWave'+(i+1),{sp,cd:60,desc:`กระโดดกระแทกพื้นรอบตัว 6 tm talAdjust(${k>1?k+' × ':''}น้ำหนักวาฬ) dmg และ ${ko} ko (min 70%)`,
   calc:()=>({items:[dmg('ต่อศัตรู',{tal:k*(+X.opt.weight||0),mul:[[has('DivingPress')?1.5:1,'DivingPress']],min:0.7,aoe:1})]})}));
 [[30,-16],[50,-24]].forEach(([d,mp],i)=>add('MalStorm'+(i+1),{mp,sp:-20,cd:60,desc:`พายุสายฟ้ารอบตัว 8 tm talAdjust(${d}) dmg × 4 และ 1 ko × 4`,calc:()=>({items:[dmg('ต่อฮิต',{tal:d,mul:[[has('DivingPress')?1.5:1,'DivingPress']],n:4,aoe:1})]})}));
@@ -1216,8 +1246,10 @@ const split=id=>{const m=id.match(/^(.*?)(\d)?$/);return{base:m[1],tier:m[2]?+m[
 const abbr=s=>{const w=pretty(s).split(' ');return w.length>1?w.map(x=>x[0]).join('').slice(0,3):s.slice(0,2)};
 const GEN_OPTS=[
   {id:'enemies',label:'จำนวนศัตรูในระยะ',type:'number',def:5,min:1,max:30},
-  {id:'defPct',label:'ลดดาเมจจาก Def เป้าหมาย',type:'number',def:0,min:0,max:100,note:'% (กรอกเองจนกว่าจะมีสูตร def/lck)'},
-  {id:'floor',label:'% CD เหลือ',type:'select',def:'floor',choices:[['floor','ปัดลงเป็นจำนวนเต็ม (ตามตาราง)'],['exact','ทศนิยมเต็ม']]}
+  {id:'roll',label:'ผลสุ่ม (luck / crit)',type:'select',def:'avg',choices:[['avg','ค่าเฉลี่ย'],['min','ต่ำสุด'],['max','สูงสุด']],note:'luckRand = สุ่ม 0..⌈0.2×lck⌉−1'},
+  {id:'tDef',label:'def เป้าหมาย',type:'number',def:20,min:0,max:512},
+  {id:'tLck',label:'lck เป้าหมาย',type:'number',def:20,min:0,max:512,note:'สุ่มบวกเข้า def เป้า'},
+  {id:'critEq',label:'โอกาส crit จากอุปกรณ์',type:'number',def:0,min:0,max:100,note:'% รวม w+a+c (43/44 = 5+4+3, 58 = 7+6+5) · ใช้กับโจมตีปกติ ×1.8'}
 ];
 
 /* ---------------- character runtime ---------------- */
@@ -1261,21 +1293,24 @@ function makeX(){
   const X={st:{},lvl:1,opt:{},own:new Set(),f1,f2};
   X.has=id=>X.own.has(id);
   X.hi=(pre,n)=>{for(let i=n;i>=1;i--)if(X.own.has(pre+i))return i;return 0};
-  X.tal=(x,t)=>x*(1+0.02*(t??X.st.tal));
+  X.clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  X.rOf=lck=>{const R=Math.max(0,Math.ceil(0.2*(lck||0))-1),m=X.opt.roll;return m==='min'?0:m==='max'?R:R/2};
+  X.tal=(x,t,lck)=>{if(!(x>0))return 0;const tt=X.clamp((t??X.st.tal)+X.rOf(lck??X.st.lck),1,512);return Math.trunc((1+0.02*tt)*x+1e-9)};
   X.talF=x=>`talAdjust(${f2(x)}) = ${f1(X.tal(x))}`;
+  X.durK=()=>1+0.015*X.clamp(X.st.cha+X.r,1,512);
   X.dmg=(label,sp={})=>{
     const S=sp.S||X.st,pre=sp.SL||'';let v=0;const fp=[];
-    STATS.forEach(k=>{if(k!=='tal'&&sp[k]){const a=sp[k]*(S[k]||0);v+=a;fp.push(`${sp[k]===1?'':f2(sp[k])+'×'}${pre}${k} ${f1(S[k]||0)}`)}});
-    if(sp.tal!=null){const a=X.tal(sp.tal,sp.S?S.tal:undefined);v+=a;fp.push(`${pre}talAdjust(${f2(sp.tal)}) ${f1(a)}`)}
+    let atkPart=0;STATS.forEach(k=>{if(k!=='tal'&&sp[k]){const a=sp[k]*(S[k]||0);v+=a;if(k==='atk')atkPart=a;fp.push(`${sp[k]===1?'':f2(sp[k])+'×'}${pre}${k} ${f1(S[k]||0)}`)}});
+    if(sp.tal!=null){const a=X.tal(sp.tal,sp.S?S.tal:undefined,sp.S?S.lck:undefined);v+=a;fp.push(`${pre}talAdjust(${f2(sp.tal)}) ${f1(a)}`)}
     if(sp.flat){v+=sp.flat;fp.push(f1(sp.flat))}
     (sp.add||[]).forEach(([a,l])=>{if(!a)return;v+=a;fp.push(`${f1(a)} (${l})`)});
-    let f=fp.join(' + ')||'0';if(fp.length>1)f+=` = ${f1(v)}`;
+    v=Math.trunc(v+1e-9);let f=fp.join(' + ')||'0';if(fp.length>1)f+=` = ${f1(v)}`;
     let lo=null;
     if(sp.rand){const[r,l]=sp.rand;lo=v;v+=r;f+=` + 0~${f1(r)} (${l})`}
     let m=1;(sp.mul||[]).forEach(([k,l])=>{if(k===1||k==null)return;m*=k;f+=` × ${f2(k)} (${l})`});
     v*=m;if(lo!=null)lo*=m;
     if(sp.min!=null){lo=(lo??v)*sp.min;f+=` · ต่ำสุด ${Math.round(sp.min*100)}%`}
-    return{k:'dmg',label,per:v,lo,n:sp.n??1,aoe:sp.aoe,nodef:sp.nodef,nomul:sp.nomul,f};
+    return{k:'dmg',label,per:v,lo,n:sp.n??1,aoe:sp.aoe,nodef:sp.nodef,nomul:sp.nomul,noRand:sp.noRand,post:sp.post,atkPart:atkPart*m,f};
   };
   X.eff=(label,v,n=1,f)=>({k:'eff',label,per:v,n,f:f??`${f1(v)} effDmg`});
   X.info=(label,val,unit='',f='')=>({k:'info',label,val,unit,f:f||f2(val)});
@@ -1314,44 +1349,54 @@ function prune(own,lvl){let ch=true;while(ch){ch=false;for(const x of [...own]){
 /* ---------------- compute ---------------- */
 function lckChance(n,lck){if(!(n>0))return n;if(n>=100)return 100;const num=n*(1+0.01*Math.min(512,Math.max(1,lck||0)));return Math.floor(100*num/(num-n+100)+1e-9)}
 function statFront(lvl,b){return Math.max(0,Math.floor((Math.max(1,lvl)-1)*(b+3)*0.083+1e-9))}
-function cdPct(agi,art){const b=art?88:100,v=b/(1+agi/128);return R.X.opt.floor==='floor'?Math.floor(v):v}
+function cdPct(agi){return 12800/(128+agi+R.X.r)}
+function revisedOK(s){return R.X.own.has('RevisedArt')&&!(s.id==='nAttack'||/^Combo\d/.test(s.id)||/^quickShot/.test(s.id))}
+function cdFinal(base,s,agi){const X=R.X;let c=s.fixed?base:base*128/(128+(agi??X.st.agi)+X.r);if(revisedOK(s))c=Math.ceil(c*0.88-1e-9);return c}
+function defAdj(d){const X=R.X,dd=X.clamp((+X.opt.tDef||0)+X.rOf(+X.opt.tLck||0),1,512),A=Math.max(1,Math.floor(d-0.5*dd)),B=Math.max(1,Math.floor(d*(1-dd/(dd+64))));return Math.ceil(0.35*A+0.65*B-1e-9)}
 function compute(){
   const {X,S,STAT_GROUPS,OPTS,cfg}=R;X.own=S.own;X.lvl=+S.lvl||1;
   OPTS.forEach(o=>{const v=S.opt[o.id];X.opt[o.id]=v===undefined?o.def:v});
-  X.opt.enemies=Math.max(1,+X.opt.enemies||1);X.opt.defPct=Math.min(100,Math.max(0,+X.opt.defPct||0));
-  const st={},bon={},front={},growth={};STATS.forEach(k=>{const v=S.stat[k]||{};const g=statFront(X.lvl,+v.b||0);growth[k]=g;front[k]=(+v.b||0)+g;st[k]=front[k]+(+v.m||0)+(+v.h||0);bon[k]=0});X.front=front;X.growth=growth;
+  X.opt.enemies=Math.max(1,+X.opt.enemies||1);
+  const st={},bon={},front={},growth={};STATS.forEach(k=>{const v=S.stat[k]||{};const g=statFront(Math.min(95,X.lvl),+v.b||0);growth[k]=g;front[k]=(+v.b||0)+g;st[k]=front[k]+(+v.m||0)+(S.sets?(+((S.sets[S.act]||S.sets[0]).v[k])||0):(+v.h||0));bon[k]=0});X.front=front;X.growth=growth;
   [].forEach(g=>{let v=0;g.ids.forEach((id,i)=>{if(S.own.has(id))v=g.vals[i]});if(!v)return;
     (g.stat==='all'?STATS:[].concat(g.stat)).forEach(k=>{st[k]+=v;bon[k]+=v})});
   X.skillBon=bon;X.st=st;X.buffBon={};
   if(cfg.hooks&&cfg.hooks.stats){const before={...st};cfg.hooks.stats(st,X);STATS.forEach(k=>X.buffBon[k]=st[k]-before[k])}
-  X.pct=cdPct(st.agi,S.own.has('RevisedArt'));
-  X.bmax=Math.max(0,Math.ceil(0.2*st.lck)-1);X.chance=n=>lckChance(n,st.lck);
+  X.bmax=Math.max(0,Math.ceil(0.2*st.lck)-1);X.r=X.rOf(st.lck);X.chance=n=>lckChance(n,st.lck);
+  X.pct=cdPct(st.agi);
   return X;
 }
 function hook(n,...a){const h=R.cfg.hooks||{};return h[n]?h[n](...a):null}
 function baseCD(s){const X=R.X;let v=typeof s.cd==='function'?s.cd(X):s.cd;if(v==null)return null;const m=hook('cdMul',s,X);if(m&&m[0]!==1)v*=m[0];return v}
 function buffsOf(s){const X=R.X;let b=typeof s.buffs==='function'?s.buffs(X):s.buffs;return(b||[]).filter(Boolean)}
+function durAt(b,k,cha,r){const X=R.X;let t=Math.trunc((1+0.015*X.clamp(cha+r,1,512))*b.b+1e-9);if(k!==1)t=Math.floor(t*k+1e-9);return t+(b.plus||0)}
 function durRange(b,s){const X=R.X;if(b.fixed)return{lo:b.b+(b.plus||0),hi:b.b+(b.plus||0),mul:null};
   const m=hook('durMul',b,s,X),k=m?m[0]:1;
-  return{lo:b.b*(1+0.015*X.st.cha)*k+(b.plus||0),hi:b.b*(1+0.015*(X.st.cha+X.bmax))*k+(b.plus||0),mul:m}}
+  return{lo:durAt(b,k,X.st.cha,0),hi:durAt(b,k,X.st.cha,X.bmax),mul:m}}
 function evalSkill(id){
   const X=R.X,s=R.SK[id],r={id,s};
   r.mp=s.mp<0&&X.has('RevisedMagic')?s.mp*0.8:s.mp;
   r.sp=s.sp<0&&X.has('RevisedSkill')?s.sp*0.5:s.sp;
   r.cdBase=baseCD(s);r.cdMulInfo=s.cd!=null?hook('cdMul',s,X):null;
-  if(r.cdBase!=null)r.cd=s.fixed?r.cdBase:r.cdBase*X.pct/100;
+  if(r.cdBase!=null)r.cd=cdFinal(r.cdBase,s);
   const c0=typeof s.cast==='function'?s.cast(X):s.cast;r.castBase=c0;r.cast=c0;r.castNotes=[];
   if(typeof c0==='number'){const cm=hook('castMul',s,X);if(cm&&cm[0]!==1){r.cast=c0*cm[0];r.castNotes.push(`×${f2(cm[0])} ${cm[1]}`)}
-    const red=Math.floor((X.st.int||0)/4)*0.125;if(red>0&&r.cast>0){const b=r.cast;r.cast=Math.max(0,r.cast-red);r.castNotes.push(`−${f2(b-r.cast)} (int ${f1(X.st.int)})`)}
+    if(r.cast>0){const m=X.clamp((X.st.int||0)+X.r,1,512),red=Math.floor(m/32),b=r.cast;r.cast=X.clamp(r.cast-red,0.1,600);if(r.cast!==b)r.castNotes.push(`−${f2(b-r.cast)} (⌊mag ${f1(m)}/32⌋)`)}
     if(r.castNotes.length)r.castInfo=[r.cast/c0,r.castNotes.join(' ')]}
   r.casts=hook('casts',s,X)||1;
   const muls=(hook('dmgMul',s,X)||[]).filter(m=>m&&m[0]!==1);
-  r.muls=muls;const gm=muls.reduce((a,m)=>a*m[0],1),dp=1-X.opt.defPct/100;
+  r.muls=muls;const rawM=muls.filter(m=>m[2]==='raw').reduce((a,m)=>a*m[0],1),modAdd=muls.filter(m=>m[2]!=='raw').reduce((a,m)=>a+(m[0]-1),0);
+  const dmod=X.clamp(1+modAdd,0,5),hits=(hook('hitMul',s,X)||[]).filter(m=>m&&m[0]),hmod=X.clamp(1+hits.reduce((a,m)=>a+m[0],0),0,3);r.dmod=dmod;r.hmod=hmod;r.hits=hits;
+  const pc=(!R.cfg.ownCrit&&s.id==='nAttack')?X.chance(+X.opt.critEq||0):0;r.critP=pc;
+  const pipe=(raw,it)=>{const nm=it.nomul;let x=raw*(nm?1:rawM);
+    if(pc>0&&it.atkPart){const add=Math.floor(it.atkPart*1.8)-it.atkPart;x+=X.opt.roll==='max'?add:X.opt.roll==='min'?0:add*pc/100}
+    const md=nm?1:dmod;let d=Math.ceil(x*md+(it.noRand?0:X.r)+(it.post?it.post[0]:0)-1e-9);const d1=d;
+    if(!it.nodef)d=defAdj(d);const d2=d;if(!nm&&hmod!==1)d=Math.ceil(d*hmod-1e-9);return{d,d1,d2,x}};
   let out={items:[]};if(s.calc){try{out=s.calc()||{items:[]}}catch(e){out={items:[],notes:['คำนวณไม่ได้: '+e.message]}}}
   r.items=(out.items||[]).filter(Boolean);r.notes=out.notes||[];
   let tot=0,totMin=0;
   r.items.forEach(it=>{
-    if(it.k==='dmg'){it.m=(it.nomul?1:gm)*(it.nodef?1:dp);it.fin=it.per*it.m;it.finLo=(it.lo??it.per)*it.m;tot+=it.fin*it.n;totMin+=it.finLo*it.n}
+    if(it.k==='dmg'){const p=pipe(it.per,it),q=it.lo!=null?pipe(it.lo,it):p;it.fin=p.d;it.finLo=q.d;it.pipe=p;tot+=it.fin*it.n;totMin+=it.finLo*it.n}
     else if(it.k==='eff'){it.fin=it.per;it.finLo=it.per;tot+=it.per*it.n;totMin+=it.per*it.n}
   });
   r.hasDmg=r.items.some(i=>i.k==='dmg'||i.k==='eff');
@@ -1370,9 +1415,10 @@ function loadState(){
   const S={lvl:sm.lvl||70,stat,own:null,opt:{},cur:null,filt:'sel',pin:null,sample:true,dtOn:false,dtSkill:cfg.defaultDT||null,dtAgiMax:300,dtChaMax:600};
   R.S=S;S.own=sampleOwn(cfg);
   try{const raw=localStorage.getItem('tt4:'+R.key);if(raw){const o=JSON.parse(raw);if(!o.stat&&o.base){o.stat={};STATS.forEach(k=>o.stat[k]={b:0,m:+o.base[k]||0,h:0})}delete o.base;Object.assign(S,o,{own:new Set((o.own||[]).filter(x=>R.SK[x])),pin:null});STATS.forEach(k=>{S.stat[k]=Object.assign({b:0,m:0,h:0},S.stat[k]||{})})}}catch(e){}
+  setsInit(S);
   S.cur=S.cur&&R.SK[S.cur]?S.cur:(cfg.focus||R.ORDER.find(id=>R.SK[id].calc&&R.SK[id].inTree)||R.ORDER[0]);
 }
-function save(){try{const S=R.S;localStorage.setItem('tt4:'+R.key,JSON.stringify({lvl:S.lvl,stat:S.stat,own:[...S.own],opt:S.opt,cur:S.cur,lock:!!S.lock,filt:S.filt,sample:S.sample,dtOn:S.dtOn,dtSkill:S.dtSkill,dtAgiMax:S.dtAgiMax,dtChaMax:S.dtChaMax}))}catch(e){}}
+function save(){try{const S=R.S;localStorage.setItem('tt4:'+R.key,JSON.stringify({lvl:S.lvl,stat:S.stat,sets:S.sets,act:S.act,plan:S.plan,plOpen:!!S.plOpen,cmpOpen:!!S.cmpOpen,own:[...S.own],opt:S.opt,cur:S.cur,lock:!!S.lock,filt:S.filt,sample:S.sample,dtOn:S.dtOn,dtSkill:S.dtSkill,dtAgiMax:S.dtAgiMax,dtChaMax:S.dtChaMax}))}catch(e){}}
 let msgT=null;function flash(t){const m=$('msg');if(!m)return;m.textContent=t;clearTimeout(msgT);msgT=setTimeout(()=>m.textContent='',4500)}
 
 /* ---------------- views ---------------- */
@@ -1406,9 +1452,10 @@ function openChar(key){
 </header>
 <p class="sample" id="sampleTag" style="margin-top:12px">บิลด์ตัวอย่าง (สกิลและ status ที่ใส่ไว้เป็นแค่ตัวอย่าง) · กด Reset เพื่อเริ่มของคุณเอง</p>
 <div class="grid2 sec">
-  <section class="card"><h2>Status ตัวละคร</h2><p class="note" style="margin:-4px 0 8px">Growth = ⌊(Lv − 1) × (Base + 3) × 0.083⌋ · หน้า = Base + Growth · กลาง/หลังกรอกเองได้เลย (รวมค่าจากสกิล + status ไว้ในนี้แล้ว ระบบไม่บวกเพิ่มให้)</p><div class="sttbl"><table class="stt"><thead><tr><th>Status</th><th>Base</th><th>Growth</th><th>หน้า</th><th>กลาง</th><th>หลัง</th><th>Final</th></tr></thead><tbody id="stats"></tbody></table></div><dl class="kv" id="derived"></dl></section>
+  <section class="card"><h2>Status ตัวละคร</h2><p class="note" style="margin:-4px 0 8px">Growth = ⌊(Lv − 1) × (Base + 3) × 0.083⌋ · หน้า = Base + Growth · กลาง/หลังกรอกเองได้เลย (รวมค่าจากสกิล + status ไว้ในนี้แล้ว ระบบไม่บวกเพิ่มให้)</p><div class="sttbl"><table class="stt"><thead><tr><th>Status</th><th>Base</th><th>Growth</th><th>หน้า</th><th>กลาง</th><th id="hHead">หลัง</th><th>Final</th></tr></thead><tbody id="stats"></tbody></table></div><dl class="kv" id="derived"></dl></section>
   <section class="card"><h2>สถานการณ์การต่อสู้</h2><div class="opts" id="opts"></div></section>
 </div>
+${plannerHTML()}
 <section class="sec treewrap"><div class="treecol"><div class="toolbar"><h2 style="margin:0">Skill Tree</h2><span class="note">คลิกซ้ายเพื่ออัพ/ยกเลิก · ชี้เพื่อดูรายละเอียด · คลิกขวา (หรือกดค้าง) เพื่อล็อกรายละเอียดไว้</span><span class="msg" id="msg" role="status"></span></div><div class="tree" id="tree"></div></div>
 <aside class="card detail" id="detail" aria-live="polite"></aside></section>
 <section class="sec">
@@ -1445,15 +1492,16 @@ function optHTML(o,v){
 function wire(){
   const {S,OPTS}=R;
   $('lvl').value=S.lvl;$('lvl').addEventListener('input',e=>{S.lvl=Math.max(1,Math.min(100,+e.target.value||1));render()});
-  $('stats').innerHTML=STATS.map(k=>`<tr><th scope="row">${k}</th><td><input id="sb_${k}" type="number" min="0" aria-label="${k} base" value="${S.stat[k].b}"></td><td class="fr" id="sg_${k}"></td><td class="fr fh" id="sf_${k}"></td><td><input id="sm_${k}" type="number" aria-label="${k} กลาง" value="${S.stat[k].m}"></td><td><input id="sh_${k}" type="number" aria-label="${k} หลัง" value="${S.stat[k].h}"></td><td class="fn" id="fin_${k}"></td></tr>`).join('');
-  STATS.forEach(k=>[['b','sb_'],['m','sm_'],['h','sh_']].forEach(([f,p])=>$(p+k).addEventListener('input',e=>{S.stat[k][f]=+e.target.value||0;S.sample=false;render()})));
+  $('stats').innerHTML=STATS.map(k=>`<tr><th scope="row">${k}</th><td><input id="sb_${k}" type="number" min="0" aria-label="${k} base" value="${S.stat[k].b}"></td><td class="fr" id="sg_${k}"></td><td class="fr fh" id="sf_${k}"></td><td><input id="sm_${k}" type="number" aria-label="${k} กลาง" value="${S.stat[k].m}"></td><td><input id="sh_${k}" type="number" aria-label="${k} หลัง" value="${gearOf(S.act,k)}"></td><td class="fn" id="fin_${k}"></td></tr>`).join('');
+  STATS.forEach(k=>[['b','sb_'],['m','sm_'],['h','sh_']].forEach(([f,p])=>$(p+k).addEventListener('input',e=>{const v=+e.target.value||0;if(f==='h'){S.sets[S.act].v[k]=v;renderSets()}else S.stat[k][f]=v;S.sample=false;render()})));
   $('stats').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')e.target.select()});
   $('opts').innerHTML=OPTS.map(o=>optHTML(o,S.opt[o.id]===undefined?o.def:S.opt[o.id])).join('');
   OPTS.forEach(o=>{const el=$('o_'+o.id);el.addEventListener(o.type==='number'?'input':'change',()=>{S.opt[o.id]=o.type==='check'?el.checked:o.type==='number'?(+el.value||0):el.value;render()})});
+  compute();wirePlanner();
   buildTree();
   $('detail').addEventListener('click',e=>{if(e.target.id==='unlock'){R.S.lock=false;renderDetail();markCur();save()}});
   const hdr=document.querySelector('header.top');const setH=()=>document.documentElement.style.setProperty('--hdr',hdr.offsetHeight+'px');setH();if(window.ResizeObserver)new ResizeObserver(setH).observe(hdr);
-  $('resetAll').addEventListener('click',()=>{S.own.clear();STATS.forEach(k=>{S.stat[k]={b:0,m:0,h:0};['sb_','sm_','sh_'].forEach(p=>$(p+k).value=0)});S.lvl=1;$('lvl').value=1;S.sample=false;S.pin=null;render()});
+  $('resetAll').addEventListener('click',()=>{S.own.clear();STATS.forEach(k=>{S.stat[k]={b:0,m:0,h:0};S.sets.forEach(st=>st.v[k]=0);['sb_','sm_','sh_'].forEach(p=>$(p+k).value=0)});renderSets();S.lvl=1;$('lvl').value=1;S.sample=false;S.pin=null;render()});
   $('filt').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.filt=b.dataset.f;renderResults();save()});
   $('res').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]');if(tr){S.cur=tr.dataset.id;S.lock=true;renderDetail();markCur();save();$('detail').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})}});
   $('pin').addEventListener('click',()=>{compute();S.pin={};R.ORDER.forEach(id=>{const r=evalSkill(id);S.pin[id]={total:r.hasDmg?r.total:null,cd:r.cd??null,dps:r.dps}});const st=R.X.st;S.pinLabel=`Lv ${S.lvl} · atk ${st.atk} · agi ${st.agi} · tal ${st.tal} · cha ${st.cha}`;render()});
@@ -1508,12 +1556,14 @@ function renderDetail(){
   if(r.castBase!=null)chips.push(`<span class="chip${r.castInfo?' warn':''}">Cast ${r.castInfo?f2(r.castBase)+' → ':''}${typeof r.cast==='number'?f2(r.cast):r.cast} วิ${r.castInfo?` (${r.castInfo[1]})`:''}</span>`);
   if(r.cdBase!=null)chips.push(`<span class="chip${r.cdMulInfo?' warn':''}">CD ${f2(r.cdBase)}${r.cdMulInfo?` (${r.cdMulInfo[1]})`:''} → ${f2(r.cd)} วิ${s.fixed?' (agi ไม่มีผล)':''}</span>`);
   if(r.casts>1)chips.push(`<span class="chip warn">×${r.casts} cast</span>`);
-  r.muls.forEach(m=>chips.push(`<span class="chip warn">×${f2(m[0])} ${m[1]}</span>`));
+  r.muls.forEach(m=>chips.push(`<span class="chip warn">${m[2]==='raw'?'×'+f2(m[0]):(m[0]>=1?'+':'')+f2(m[0]-1)+' damageMod'} ${m[1]}</span>`));
+  r.hits.forEach(m=>chips.push(`<span class="chip warn">${m[0]>0?'+':''}${f2(m[0])} hitMod ${m[1]}</span>`));
+  if(r.critP)chips.push(`<span class="chip warn">crit ${r.critP}% ×1.8 (atk)</span>`);
   if(!S.own.has(id)&&!s.always)chips.push(`<span class="chip">ยังไม่ได้อัพ</span>`);
   const lines=[];
   r.items.forEach(it=>{
     if(it.k==='info')lines.push(`<div class="r">${it.label}: ${it.f} → <b>${f2(it.val)} ${it.unit}</b></div>`);
-    else{let m=it.f;if(it.k==='dmg'&&it.m!==1)m+=` × ${f2(it.m)} (โบนัส/def)`;lines.push(`<div class="r">${it.label}: ${m} → <b class="${it.k==='eff'?'eff':''}">${f1(it.fin)}${it.finLo<it.fin-0.05?` (ต่ำสุด ${f1(it.finLo)})`:''}</b>${it.n>1?` × ${it.n}`:''}</div>`)}});
+    else{let m=it.f;if(it.k==='dmg'&&it.pipe){const p=it.pipe,X=R.X;const md=it.nomul?1:r.dmod;m+=` → ⌈${f1(p.x)}${md!==1?` × ${f2(md)}`:''}${!it.noRand&&X.r?` + ${f1(X.r)} luck`:''}${it.post?` + ${f1(it.post[0])} ${it.post[1]}`:''}⌉ = ${p.d1}${it.nodef?' (ไม่คิด def)':` → def: ${p.d2}`}${!it.nomul&&r.hmod!==1?` → × ${f2(r.hmod)} ฝั่งรับ`:''}`}lines.push(`<div class="r">${it.label}: ${m} → <b class="${it.k==='eff'?'eff':''}">${f1(it.fin)}${it.finLo<it.fin-0.05?` (ต่ำสุด ${f1(it.finLo)})`:''}</b>${it.n>1?` × ${it.n}`:''}</div>`)}});
   if(r.hasDmg)lines.push(`<div class="r">รวมต่อการใช้${r.casts>1?` × ${r.casts} cast`:''}: <b>${r.totalMin<r.total-0.05?f1(r.totalMin)+'–':''}${f1(r.total)}</b></div>`);
   if(r.dps!=null)lines.push(`<div class="r">DPS = ${f1(r.total)} ÷ ${f2(r.cycle)} วิ ${r.span&&r.cycle>=r.span-1e-9&&r.span>r.cd?'(ระยะเวลาที่ดาเมจออก นานกว่า CD)':r.cycle>r.cd+1e-9?'(cast นานกว่า CD)':'(CD)'} ≈ <b>${f1(r.dps)}</b> ดาเมจ/วินาที</div>`);
   r.buffs.forEach(b=>lines.push(`<div class="r">สถานะ ${durTxt(b)}${b.fixed?'':` (cha ${X.st.cha}, bonus 0–${X.bmax})`}</div>`));
@@ -1521,7 +1571,7 @@ function renderDetail(){
   const own=S.own.has(id);
   const rq=s.inTree?`<ul class="reqs">${reqList(id,S.own,S.lvl).filter(q=>!(own&&q.k==='pt')).map(q=>`<li><span class="${q.met?'ok':'no'}">${q.met?'✓':'✗'}</span><span class="lb">${q.label}</span><span>${esc(q.value)}</span></li>`).join('')}</ul>`:'';
   const lb=`<div class="lockbar${S.lock?' on':''}">${S.lock?`🔒 ล็อกรายละเอียดไว้ · คลิกขวาที่สกิลอื่นเพื่อเปลี่ยน <button type="button" id="unlock">ปลดล็อก</button>`:'ชี้ที่สกิลเพื่อดู · คลิกขวาเพื่อล็อก'}</div>`;
-  $('detail').innerHTML=lb+`<h3>${ICONS[id]?`<img src="${ICONS[id]}" alt="">`:''}${id}</h3><div class="meta">${chips.join('')}</div><p class="desc">${chanceText(s.desc||'')}</p>${rq}${lines.length?`<div class="math">${lines.join('')}</div>`:''}`;
+  $('detail').innerHTML=lb+`<h3>${ICONS[id]?`<img src="${ICONS[id]}" alt="">`:''}${id}</h3><div class="meta">${chips.join('')}</div><p class="desc">${chanceText((typeof s.desc==='function'?s.desc(X):s.desc)||'')}</p>${rq}${lines.length?`<div class="math">${lines.join('')}</div>`:''}`;
 }
 
 /* ---------------- results ---------------- */
@@ -1545,11 +1595,10 @@ function renderResults(){
 
 /* ---------------- agi ---------------- */
 function renderAgi(){
-  const X=R.X,agi=X.st.agi,art=R.S.own.has('RevisedArt'),b=art?88:100;
-  let next=null;for(let a=agi+1;a<agi+500;a++){if(Math.floor(b/(1+a/128))<Math.floor(b/(1+agi/128))){next=a;break}}
-  $('agiNow').innerHTML=`agi ${agi} → CD เหลือ <b style="color:var(--gold)">${f2(X.pct)}%</b>${art?' (มี RevisedArt)':''}${next?` · ลดอีก 1% ที่ agi ${next} (+${next-agi})`:''}`;
-  const pts=[20,31,39,46,58,64,73,82,86,93,100,104,110,114,119,123,129,134,139,145,151,157,163,170];
-  $('agiTbl').innerHTML=[...new Set([...pts,agi])].sort((a,c)=>a-c).map(a=>`<div class="${a===agi?'me':''}"><span>${a}</span><span>${Math.floor(100/(1+a/128))}% · ${Math.floor(88/(1+a/128))}%</span></div>`).join('');
+  const X=R.X,agi=X.st.agi,art=R.S.own.has('RevisedArt');
+  $('agiNow').innerHTML=`agi ${agi}${X.r?` + luck ${f1(X.r)}`:''} → CD เหลือ <b style="color:var(--gold)">${f2(X.pct)}%</b> = 128 / (128 + agi)${art?' · RevisedArt: ⌈CD × 0.88⌉ วินาทีเต็ม':''}`;
+  const pts=[0,20,40,60,80,100,128,150,180,200,256,300,384,450,512,640];
+  $('agiTbl').innerHTML=[...new Set([...pts,agi])].sort((a,c)=>a-c).map(a=>`<div class="${a===agi?'me':''}"><span>${a}</span><span>${f1(12800/(128+a))}%</span></div>`).join('');
 }
 
 /* ---------------- downtime chart ---------------- */
@@ -1557,11 +1606,11 @@ const tok=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim
 let DT=null;
 function dtModel(){
   const {S,SK,X}=R,id=S.dtSkill,s=SK[id];if(!s)return null;const b=buffsOf(s).find(x=>!x.fixed);if(!b)return null;
-  const art=S.own.has('RevisedArt'),base=baseCD(s),dm=hook('durMul',b,s,X),k=dm?dm[0]:1,plus=b.plus||0;
-  const cdAt=agi=>base*cdPct(agi,art)/100;
-  const durAt=(cha,bon)=>b.b*(1+0.015*(cha+bon))*k+plus;
-  const needCha=(agi,bon)=>Math.max(0,((cdAt(agi)-plus)/(b.b*k)-1)/0.015-bon);
-  return{id,s,b,art,cdAt,durAt,needCha,agiMax:S.dtAgiMax||300,chaMax:S.dtChaMax||600};
+  const art=revisedOK(s),base=baseCD(s),dm=hook('durMul',b,s,X),k=dm?dm[0]:1,plus=b.plus||0;
+  const cdAt=agi=>cdFinal(base,s,agi);
+  const durAt_=(cha,bon)=>durAt(b,k,cha,bon);
+  const needCha=(agi,bon)=>{const t=cdAt(agi);if(durAt_(0,bon)>=t)return 0;let lo=0,hi=600;if(durAt_(hi,bon)<t)return 600;while(hi-lo>1){const m=(lo+hi)>>1;if(durAt_(m,bon)>=t)hi=m;else lo=m}return hi};
+  return{id,s,b,art,cdAt,durAt:durAt_,needCha,agiMax:S.dtAgiMax||300,chaMax:S.dtChaMax||600};
 }
 function renderDT(){
   const on=R.S.dtOn;$('dtBody').hidden=!on;if(!on)return;compute();
@@ -1611,6 +1660,116 @@ function wireChart(){
 }
 window.addEventListener('resize',()=>{if(R&&R.S.dtOn)renderDT()});
 
+/* Stat planner: gear sets + ordered allocation rules. Loaded inside engine IIFE scope via build (string-inserted). */
+const RULE_T={reach:'ลงจนถึง',cd:'CD สกิล ≤',cast:'Cast สกิล ≤',up:'สถานะไม่มี downtime',rest:'ที่เหลือทั้งหมดลง'};
+function statCap(lvl,cUsed){const L=lvl;return 2*L+(L>=105?8:L>=100?3:-2)+5*(L>=110)+5*(L>=115)+5*(L>=120)-5*Math.max(0,cUsed-9)}
+function cUsedCount(){let n=0;R.S.own.forEach(id=>{const s=R.SK[id];if(s&&s.inTree&&s.cls==='C'&&!s.ex)n++});return n}
+function setsInit(S){
+  if(!Array.isArray(S.sets)||!S.sets.length){const v={};STATS.forEach(k=>v[k]=+((S.stat[k]||{}).h)||0);S.sets=[{name:'เซ็ต 1',v}]}
+  S.sets.forEach(s=>STATS.forEach(k=>{s.v[k]=+s.v[k]||0}));
+  if(!(S.act>=0&&S.act<S.sets.length))S.act=0;
+  if(!S.plan){const f=R.cfg.focus;S.plan={budget:'',rules:[{t:'cd',skill:f,sec:'',set:0,cap:''},{t:'rest',stat:'tal'}]}}
+}
+const gearOf=(si,k)=>{const s=R.S.sets[si]||R.S.sets[0];return +s.v[k]||0};
+/* final stat (no situational buffs) in set si with mid allocation mid */
+function finalIn(si,k,mid){const X=R.X;return X.front[k]+(mid[k]||0)+gearOf(si,k)}
+/* evaluate skill under alternative stats: temporarily swap */
+function withStats(si,mid,fn){const S=R.S,saveAct=S.act,saveM={};STATS.forEach(k=>{saveM[k]=S.stat[k].m;S.stat[k].m=mid[k]||0});S.act=si;compute();let out;try{out=fn()}finally{S.act=saveAct;STATS.forEach(k=>S.stat[k].m=saveM[k]);compute()}return out}
+function minStatFor(si,mid,k,test,max=1500){/* smallest final value of stat k in set si s.t. test() true; returns {need,ok} */
+  const base=finalIn(si,k,mid);const at=v=>{const m2={...mid,[k]:(mid[k]||0)+(v-base)};return withStats(si,m2,test)};
+  if(at(base))return{need:base,ok:true};if(!at(max))return{need:null,ok:false};let lo=base,hi=max;while(hi-lo>1){const m=(lo+hi)>>1;if(at(m))hi=m;else lo=m}return{need:hi,ok:true}}
+function runPlan(){
+  const S=R.S,X=R.X,P=S.plan,cap=statCap(Math.max(1,+S.lvl||1),cUsedCount());
+  const budget=P.budget===''||P.budget==null?cap:Math.max(0,+P.budget||0);
+  const mid={};STATS.forEach(k=>mid[k]=0);let left=budget;const res=[];
+  const sets=S.sets.map((s,i)=>i);
+  P.rules.forEach((ru,ri)=>{
+    const out={ru,ok:true,txt:'',add:0,stat:null};
+    const tgtSets=ru.set==='all'||ru.set==null?sets:[+ru.set];
+    const give=(k,n,capV)=>{if(capV!==''&&capV!=null&&capV!==undefined){const mx=Math.min(...tgtSets.map(si=>+capV-finalIn(si,k,mid)));n=Math.min(n,Math.max(0,mx))}n=Math.max(0,Math.min(n,left));mid[k]+=n;left-=n;out.add=n;out.stat=k;return n};
+    if(ru.t==='reach'){const k=ru.stat,T=+ru.target||0;const room=Math.min(...tgtSets.map(si=>T-finalIn(si,k,mid)));const want=Math.max(0,room);const g=give(k,want);
+      out.ok=g>=want;out.txt=`${k} สูงสุดในเซ็ต = ${Math.max(...tgtSets.map(si=>finalIn(si,k,mid)))} / เป้า ${T}`}
+    else if(ru.t==='cd'||ru.t==='cast'||ru.t==='up'){
+      const s=R.SK[ru.skill];if(!s){out.ok=false;out.txt='ยังไม่ได้เลือกสกิล';res.push(out);return}
+      const k=ru.t==='cd'?'agi':ru.t==='cast'?'int':'cha';
+      let need=0,okAll=true,last=null;
+      tgtSets.forEach(si=>{let test;
+        if(ru.t==='cd'){const sec=+ru.sec||0;test=()=>{const r=evalSkill(ru.skill);return r.cd!=null&&r.cd<=sec+1e-9}}
+        else if(ru.t==='cast'){const sec=+ru.sec||0;test=()=>{const r=evalSkill(ru.skill);return typeof r.cast!=='number'||r.cast<=sec+1e-9}}
+        else test=()=>{const r=evalSkill(ru.skill);const b=r.buffs.find(x=>!x.fixed);return !b||r.cd==null||b.lo>=r.cd};
+        const m=minStatFor(si,mid,k,test);if(!m.ok){okAll=false;return}need=Math.max(need,m.need-finalIn(si,k,mid))});
+      const g=give(k,need,ru.cap);out.ok=okAll&&g>=need;
+      const si0=tgtSets[0];last=withStats(si0,mid,()=>evalSkill(ru.skill));
+      out.txt=ru.t==='cd'?`CD ${last.cd!=null?f2(last.cd):'–'} วิ (เป้า ${ru.sec||'?'})`:ru.t==='cast'?`Cast ${typeof last.cast==='number'?f2(last.cast):'–'} วิ (เป้า ${ru.sec||'?'})`:(()=>{const b=last.buffs.find(x=>!x.fixed);return b?`${esc(b.n)} ${f2(b.lo)} วิ · CD ${f2(last.cd)} วิ`:'สกิลนี้ไม่มีสถานะที่คิด cha'})();
+      if(!okAll)out.txt+=' · ทำไม่ได้แม้ลงเต็มที่';else if(!out.ok)out.txt+=` · ขาดอีก ${need-g} แต้ม${ru.cap!==''&&ru.cap!=null&&g<need&&left>0?' (ติดเพดาน)':''}`}
+    else if(ru.t==='rest'){give(ru.stat,left);out.txt=`${ru.stat} +${out.add}`}
+    res.push(out)});
+  return{budget,cap,mid,left,res};
+}
+function plannerHTML(){return `<section class="sec card" id="planner">
+  <div class="toolbar"><button type="button" class="tgl" id="plTgl" aria-expanded="false" aria-controls="plBody"><span class="chev">▸</span><h2 style="margin:0;display:inline">วางแผน Status</h2></button><span class="note">มีอุปกรณ์หลายเซ็ตได้ · ตั้งกฎตามลำดับ แล้วระบบจะลงแต้ม “กลาง” ให้ · ยังไม่รวมบัฟชั่วคราว</span></div>
+  <div id="plBody" hidden>
+  <div class="plgrid">
+    <div class="plcol"><h3 class="h3">1. อุปกรณ์ (ค่า “หลัง” ของแต่ละเซ็ต)</h3><div class="sttbl"><table class="stt" id="setTbl"></table></div>
+      <div class="plbtns"><button type="button" id="setAdd">+ เพิ่มเซ็ต</button><span class="note">เซ็ตที่เลือก “ใช้งาน” คือค่าหลังในตาราง Status ด้านบน</span></div></div>
+    <div class="plcol"><h3 class="h3">2. กฎการลงแต้ม (ทำจากบนลงล่าง)</h3>
+      <div class="opt"><span>แต้มที่ลงได้</span><input type="number" id="plBudget" min="0" placeholder="อัตโนมัติ"><span class="note" id="plCap"></span></div>
+      <ol class="rules" id="rules"></ol>
+      <div class="plbtns"><select id="ruleType">${Object.entries(RULE_T).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select><button type="button" id="ruleAdd">+ เพิ่มกฎ</button></div></div>
+  </div>
+  <h3 class="h3">3. ผลลัพธ์</h3>
+  <div class="plres" id="plRes"></div>
+  <div class="plbtns"><button type="button" class="gold" id="plApply">นำไปใส่ช่อง “กลาง”</button><span class="note" id="plMsg"></span></div>
+  <button type="button" class="tgl" id="cmpTgl" aria-expanded="false" aria-controls="cmpBody"><span class="chev">▸</span><h3 class="h3" style="display:inline">เซ็ตไหนเหมาะกับสกิลไหน (ตามแผนนี้)</h3></button>
+  <div id="cmpBody" hidden><div class="tblwrap plcmp"><table id="plCmp"></table></div></div>
+  </div>
+</section>`}
+function skillOptions(sel,filter){return R.ORDER.filter(id=>{const s=R.SK[id];return !s.ph&&s.cd!=null&&(!filter||filter(s))}).map(id=>`<option value="${id}" ${id===sel?'selected':''}>${id}${R.S.own.has(id)?'':' (ยังไม่อัพ)'}</option>`).join('')}
+function setSel(v,allowAll=true){const S=R.S;return `<select data-f="set">${allowAll?`<option value="all" ${v==='all'?'selected':''}>ทุกเซ็ต</option>`:''}${S.sets.map((s,i)=>`<option value="${i}" ${String(v)===String(i)?'selected':''}>${esc(s.name)}</option>`).join('')}</select>`}
+function statSel(v,list=STATS){return `<select data-f="stat">${list.map(k=>`<option value="${k}" ${k===v?'selected':''}>${k}</option>`).join('')}</select>`}
+function renderRules(){const S=R.S;$('rules').innerHTML=S.plan.rules.map((ru,i)=>{
+  let body='';
+  if(ru.t==='reach')body=`ลง ${statSel(ru.stat||'int')} ให้รวมสูงสุดไม่เกิน <input type="number" data-f="target" value="${ru.target??''}" min="0"> ใน ${setSel(ru.set??'all')}`;
+  else if(ru.t==='cd')body=`<select data-f="skill">${skillOptions(ru.skill,s=>!s.fixed)}</select> CD ≤ <input type="number" step="0.1" data-f="sec" value="${ru.sec??''}"> วิ ใน ${setSel(ru.set??0)} · agi ไม่เกิน <input type="number" data-f="cap" value="${ru.cap??''}" placeholder="–">`;
+  else if(ru.t==='cast')body=`<select data-f="skill">${skillOptions(ru.skill,s=>s.cast!=null)}</select> Cast ≤ <input type="number" step="0.1" data-f="sec" value="${ru.sec??''}"> วิ ใน ${setSel(ru.set??0)} · int ไม่เกิน <input type="number" data-f="cap" value="${ru.cap??''}" placeholder="–">`;
+  else if(ru.t==='up')body=`<select data-f="skill">${skillOptions(ru.skill,s=>!s.fixed&&buffsOf(s).some(b=>!b.fixed))}</select> สถานะอยู่นาน ≥ CD ใน ${setSel(ru.set??0)} · cha ไม่เกิน <input type="number" data-f="cap" value="${ru.cap??''}" placeholder="–">`;
+  else body=`ลง ${statSel(ru.stat||'tal')}`;
+  return `<li data-i="${i}"><span class="rt">${RULE_T[ru.t]}</span><span class="rb">${body}</span><span class="rr" id="rr_${i}"></span><span class="rx"><button type="button" data-a="up" aria-label="เลื่อนขึ้น">↑</button><button type="button" data-a="dn" aria-label="เลื่อนลง">↓</button><button type="button" data-a="del" aria-label="ลบกฎ">✕</button></span></li>`}).join('')||'<li class="note">ยังไม่มีกฎ เพิ่มกฎด้านล่าง</li>'}
+function renderSets(){const S=R.S;
+  $('setTbl').innerHTML=`<thead><tr><th>Status</th>${S.sets.map((s,i)=>`<th><input class="sname" data-si="${i}" value="${esc(s.name)}" aria-label="ชื่อเซ็ต"><label class="act"><input type="radio" name="actSet" data-si="${i}" ${i===S.act?'checked':''}> ใช้งาน</label>${S.sets.length>1?`<button type="button" class="sdel" data-si="${i}" aria-label="ลบเซ็ต">✕</button>`:''}</th>`).join('')}</tr></thead><tbody>${STATS.map(k=>`<tr><th scope="row">${k}</th>${S.sets.map((s,i)=>`<td><input type="number" data-si="${i}" data-k="${k}" value="${s.v[k]}"></td>`).join('')}</tr>`).join('')}</tbody>`}
+function renderPlan(){
+  if(!$('planner'))return;tglSync();if(!R.S.plOpen)return;const S=R.S,X=R.X;let fill=false;S.plan.rules.forEach(ru=>{if((ru.t==='cd'||ru.t==='cast')&&(ru.sec===''||ru.sec==null)&&R.SK[ru.skill]){const r=evalSkill(ru.skill);const v=ru.t==='cd'?r.cd:r.cast;if(typeof v==='number'){ru.sec=Math.max(ru.t==='cd'?1:0.1,Math.floor(v)-(ru.t==='cd'?1:0));fill=true}}});if(fill)renderRules();const P=runPlan();
+  $('plCap').textContent=`เพดานจากเกม ${P.cap} (2×Lv ${S.lvl>=100?'+3':'−2'}${cUsedCount()>9?` −5×${cUsedCount()-9} C-skill`:''})`;
+  P.res.forEach((o,i)=>{const el=$('rr_'+i);if(el)el.innerHTML=`<span class="${o.ok?'ok':'no'}">${o.ok?'✓':'✗'}</span> ${o.stat?`+${o.add} ${o.stat} · `:''}${o.txt}`});
+  const used=P.budget-P.left;
+  $('plRes').innerHTML=`<div class="sttbl"><table class="stt"><thead><tr><th>Status</th><th>กลาง (แผน)</th><th>กลาง (ตอนนี้)</th>${S.sets.map(s=>`<th>Final · ${esc(s.name)}</th>`).join('')}</tr></thead><tbody>${STATS.map(k=>`<tr><th scope="row">${k}</th><td class="fn"><b>${P.mid[k]}</b></td><td class="fr">${S.stat[k].m}</td>${S.sets.map((s,i)=>`<td class="fr fh">${finalIn(i,k,P.mid)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="note">ใช้ ${used} / ${P.budget} แต้ม${P.left?` · เหลือ ${P.left}`:''}</p>`;
+  R._plan=P;
+  if(!R.S.cmpOpen)return;
+  // comparison: damage skills owned × sets
+  const ids=R.ORDER.filter(id=>S.own.has(id)||R.SK[id].always).filter(id=>{const s=R.SK[id];return s.calc});
+  const rows=[];S.sets.forEach((s,si)=>withStats(si,P.mid,()=>{ids.forEach(id=>{const r=evalSkill(id);if(!r.hasDmg)return;(rows[id]||(rows[id]=[]))[si]={t:r.total,d:r.dps,cd:r.cd}})}));
+  const list=ids.filter(id=>rows[id]);
+  $('plCmp').innerHTML=list.length?`<thead><tr><th>สกิล</th>${S.sets.map(s=>`<th>${esc(s.name)} · รวม / DPS / CD</th>`).join('')}</tr></thead><tbody>${list.map(id=>{const v=rows[id],tv=v.map(x=>x?x.t:0),best=Math.max(...tv),uniq=tv.some(t=>Math.abs(t-best)>0.5);return `<tr><td class="nm">${R.ICONS[id]?`<img src="${R.ICONS[id]}" alt="">`:''}${id}</td>${v.map(x=>`<td class="${x&&uniq&&x.t===best?'best':''}">${x?`${f1(x.t)}<span class="s">${x.d!=null?f1(x.d)+'/s':'–'} · ${x.cd!=null?f2(x.cd)+' วิ':'–'}</span>`:'–'}</td>`).join('')}</tr>`}).join('')}</tbody>`:'<tbody><tr><td class="note" style="text-align:left">ยังไม่ได้อัพสกิลที่มีดาเมจ</td></tr></tbody>';
+}
+function tglSync(){const S=R.S;[['plTgl','plBody','plOpen'],['cmpTgl','cmpBody','cmpOpen']].forEach(([b,d,k])=>{const o=!!S[k];$(d).hidden=!o;$(b).setAttribute('aria-expanded',o);$(b).querySelector('.chev').textContent=o?'▾':'▸'})}
+function wirePlanner(){
+  const S=R.S;setsInit(S);renderSets();renderRules();$('plBudget').value=S.plan.budget;
+  $('setTbl').addEventListener('input',e=>{const t=e.target,si=+t.dataset.si;if(t.classList.contains('sname')){S.sets[si].name=t.value;renderRules();renderPlan();save();return}
+    if(t.dataset.k){S.sets[si].v[t.dataset.k]=+t.value||0;if(si===S.act){const h=$('sh_'+t.dataset.k);if(h)h.value=t.value}render()}});
+  $('setTbl').addEventListener('change',e=>{const t=e.target;if(t.name==='actSet'){S.act=+t.dataset.si;STATS.forEach(k=>{const h=$('sh_'+k);if(h)h.value=gearOf(S.act,k)});render()}});
+  $('setTbl').addEventListener('click',e=>{const b=e.target.closest('.sdel');if(!b)return;const si=+b.dataset.si;S.sets.splice(si,1);if(S.act>=S.sets.length)S.act=S.sets.length-1;S.plan.rules.forEach(r=>{if(r.set!=='all'&&r.set!=null){if(+r.set===si)r.set=0;else if(+r.set>si)r.set=+r.set-1}});renderSets();renderRules();STATS.forEach(k=>{const h=$('sh_'+k);if(h)h.value=gearOf(S.act,k)});render()});
+  $('setAdd').addEventListener('click',()=>{if(S.sets.length>=4)return;const v={};STATS.forEach(k=>v[k]=gearOf(S.act,k));S.sets.push({name:'เซ็ต '+(S.sets.length+1),v});renderSets();renderRules();render()});
+  $('plTgl').addEventListener('click',()=>{S.plOpen=!S.plOpen;renderPlan();save()});
+  $('cmpTgl').addEventListener('click',()=>{S.cmpOpen=!S.cmpOpen;renderPlan();save()});
+  $('plBudget').addEventListener('input',e=>{S.plan.budget=e.target.value;renderPlan();save()});
+  $('ruleAdd').addEventListener('click',()=>{const t=$('ruleType').value;const ru={t};if(t==='reach'){ru.stat='int';ru.target='';ru.set='all'}else if(t==='rest')ru.stat='tal';else{ru.skill=R.cfg.focus;ru.sec='';ru.set=0;ru.cap=''}S.plan.rules.push(ru);renderRules();renderPlan();save()});
+  const upd=e=>{const li=e.target.closest('li[data-i]');if(!li)return;const ru=S.plan.rules[+li.dataset.i],f=e.target.dataset.f;if(!f)return;ru[f]=f==='set'?(e.target.value==='all'?'all':+e.target.value):e.target.value;renderPlan();save()};
+  $('rules').addEventListener('change',upd);$('rules').addEventListener('input',e=>{if(e.target.tagName==='INPUT')upd(e)});
+  $('rules').addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;const i=+b.closest('li').dataset.i,R_=S.plan.rules;
+    if(b.dataset.a==='del')R_.splice(i,1);else if(b.dataset.a==='up'&&i>0)[R_[i-1],R_[i]]=[R_[i],R_[i-1]];else if(b.dataset.a==='dn'&&i<R_.length-1)[R_[i+1],R_[i]]=[R_[i],R_[i+1]];renderRules();renderPlan();save()});
+  $('plApply').addEventListener('click',()=>{const P=R._plan;if(!P)return;STATS.forEach(k=>{S.stat[k].m=P.mid[k];const el=$('sm_'+k);if(el)el.value=P.mid[k]});S.sample=false;$('plMsg').textContent='ใส่ค่ากลางตามแผนแล้ว';setTimeout(()=>{const m=$('plMsg');if(m)m.textContent=''},3000);render()});
+}
+
 /* ---------------- main render ---------------- */
 function render(){
   if(!R)return;compute();const {S,SK,X,cfg,OPTS}=R;
@@ -1624,19 +1783,25 @@ function render(){
   document.querySelectorAll('#tree .tile[data-id]').forEach(t=>{const id=t.dataset.id,on=S.own.has(id);t.classList.toggle('on',on);t.classList.toggle('cur',id===S.cur);t.classList.toggle('pin',!!S.lock&&id===S.cur);
     t.classList.toggle('lock',!on&&!canLearn(id,S.own,S.lvl));t.classList.toggle('bad',on&&S.lvl<SK[id].lv)});
   const extra=(cfg.derived?cfg.derived(X):[]).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('');
-  $('derived').innerHTML=`<dt>talAdjust</dt><dd>× ${f2(1+0.02*X.st.tal)}</dd><dt>CD เหลือ</dt><dd>${f2(X.pct)}%${S.own.has('RevisedArt')?' (RevisedArt)':''}</dd><dt>โอกาส (lck ${f1(X.st.lck)})</dt><dd>10% → ${X.chance(10)}% · 20% → ${X.chance(20)}% · 50% → ${X.chance(50)}%</dd><dt>ระยะสถานะ (cha)</dt><dd>× ${f2(1+0.015*X.st.cha)} – ${f2(1+0.015*(X.st.cha+X.bmax))} (bonus 0–${X.bmax})</dd>${extra}`;
+  $('derived').innerHTML=`<dt>luckRand</dt><dd>0–${X.bmax} (ใช้ ${f1(X.r)} · ${({avg:'ค่าเฉลี่ย',min:'ต่ำสุด',max:'สูงสุด'})[X.opt.roll]})</dd><dt>talAdjust</dt><dd>× ${f2(1+0.02*X.clamp(X.st.tal+X.r,1,512))}</dd><dt>CD เหลือ</dt><dd>${f2(X.pct)}%${S.own.has('RevisedArt')?' แล้ว ⌈×0.88⌉':''}</dd><dt>Cast ลด</dt><dd>${Math.floor(X.clamp(X.st.int+X.r,1,512)/32)} วิ (⌊mag/32⌋)</dd><dt>โอกาส (lck ${f1(X.st.lck)})</dt><dd>10% → ${X.chance(10)}% · 20% → ${X.chance(20)}% · 50% → ${X.chance(50)}%</dd><dt>ระยะสถานะ (cha)</dt><dd>× ${f2(1+0.015*X.st.cha)} – ${f2(1+0.015*(X.st.cha+X.bmax))} (bonus 0–${X.bmax})</dd>${extra}`;
   OPTS.forEach(o=>{const n=$('o_'+o.id+'_n');if(n)n.textContent=o.warn?(o.warn(X)||''):''});
   $('sampleTag').hidden=!S.sample;$('unpin').hidden=!S.pin;$('pinNote').textContent=S.pin?`กำลังเทียบกับ: ${S.pinLabel}`:'';
   $('notes').innerHTML=[
-    '<b>talAdjust(x)</b> = x × (1 + tal × 0.02) · ส่วนที่คูณ atk/def ใช้ค่า final ของ status นั้นตรงๆ',
-    '<b>CD เหลือ%</b> = 100 / (1 + agi/128) · มี RevisedArt ใช้ 88 แทน 100 · สกิลที่ระบุ “agi ไม่มีผล” ใช้ CD เดิม และ RevisedArt ไม่มีผล',
-    '<b>ระยะสถานะ</b> = base × (1 + 0.015 × (cha + bonus)), bonus สุ่ม 0 ถึง ⌈0.2×lck⌉−1 · สถานะที่ระบุ “cha ไม่มีผล” ใช้ค่าเดิม',
-    '<b>Cast</b> = cast พื้นฐาน (หลังโบนัสเฉพาะตัว) − ⌊int/4⌋ × 0.125 วิ (ต่ำสุด 0) · <b>DPS</b> = ดาเมจรวมต่อการใช้ ÷ max(CD final, cast) · cooldown เริ่มนับทันทีที่กดสกิล ระหว่างร่ายจึงนับ CD ไปพร้อมกัน (ยืนยันแล้ว)',
-    '<b>โอกาส %</b> (ทุกสกิล): num = n × (1 + 0.01 × clamp(lck, 1, 512)) · ผล = ⌊100 × num / (num − n + 100)⌋ · ใช้กับทุกโอกาส % ในคำอธิบายสกิล (รวมโอกาสหลบ, ติดสถานะ, ฟื้นคืนชีพ, critical และตัวตั้งของ DeathBlow) ยกเว้นสกิลที่ PDF ให้สูตร lck แยก (TruceTrading, GrandCasinoArcade)',
-    '<b>Status final</b> = หน้า (Base + Growth ⌊(Lv − 1) × (Base + 3) × 0.083⌋) + กลาง + หลัง (สกิลเพิ่มสเตตัสไม่ถูกบวกซ้ำ กรอกรวมไว้ในกลาง/หลังแล้ว) · บัฟที่เปิดในช่องสถานการณ์ยังบวกให้ · <b>effDmg</b> ไม่คูณ tal / def / โบนัสดาเมจ',
-    '<b>ยังไม่มีสูตร:</b> การหักด้วย def เป้าหมายและผลของ lck ต่อดาเมจ (ใช้ช่อง % ลดดาเมจแทนไปก่อน) · กราฟ downtime: สถานะติดหลังร่ายเสร็จทั้งรอบนี้และรอบหน้า cast จึงหักล้างกัน downtime = CD − ระยะสถานะ'
+    '<b>ที่มาของสูตร:</b> แกะจาก client เกม (GameAssembly.dll) ยกเว้นตัวเลขสกิลที่มาจาก PDF',
+    '<b>luckRand</b> = สุ่มจำนวนเต็ม 0..⌈0.2×lck⌉−1 บวกเข้า tal, cha, agi, mag ในการคำนวณ และบวกเข้าดาเมจทุก hit · ฝั่งเป้าหมายบวกเข้า def · เลือกโหมดต่ำสุด/เฉลี่ย/สูงสุดได้ในช่องสถานการณ์',
+    '<b>talAdjust(x)</b> = ⌊x × (1 + 0.02 × clamp(tal + luck, 1, 512))⌋ · ดาเมจดิบของสกิลตัดทศนิยม',
+    '<b>ดาเมจ</b> = ⌈ดิบ × damageMod + luck⌉ → def เป้า → ⌈× hitMod ฝั่งรับ⌉ · damageMod = 1 + บัฟทุกตัวบวกกัน (valor, enrage, seal, drunken) clamp 0..5 · hitMod = 1 + ดีบัฟบนเป้า (amplifyDamage ฯลฯ) clamp 0..3',
+    '<b>def</b>: d = clamp(def + luck เป้า, 1, 512) · A = max(1, ⌊dmg − 0.5d⌋) · B = max(1, ⌊dmg × (1 − d/(d+64))⌋) · ผล = ⌈0.35A + 0.65B⌉ · effDmg ไม่คิด def / damageMod / hitMod',
+    '<b>crit</b> มาจากอุปกรณ์ (w+a+c) เท่านั้น: โอกาส = lckAdjust(รวม) · ใช้กับโจมตีปกติ: atk → ⌊atk × 1.8⌋',
+    '<b>CD</b> = CD × 128 / (128 + agi + luck) · RevisedArt: ⌈CD × 0.88⌉ (ไม่มีผลกับโจมตีปกติ) · สกิลที่ “agi ไม่มีผล” ไม่ผ่าน agi แต่ RevisedArt ยังมีผล · CD เริ่มนับทันทีที่กด',
+    '<b>Cast</b> = clamp(cast − ⌊clamp(mag + luck, 1, 512) / 32⌋, 0.1, 600) วินาที · mag คือช่อง int',
+    '<b>ระยะสถานะ</b> = ⌊(1 + 0.015 × clamp(cha ผู้ร่าย + luck, 1, 512)) × base⌋ · Perseverance (Wolf) ⌊×1.3 / ×1.5⌋ หลัง cha',
+    '<b>โอกาส %</b> = lckAdjust: num = n × (1 + 0.01 × clamp(lck,1,512)); ⌊100 × num / (num − n + 100)⌋ · ยกเว้น blind, LotusPalm/heavenBreath ที่ใช้ % ตรง',
+    '<b>Status</b> หน้า = Base + Growth ⌊(min(Lv,95) − 1) × (Base + 3) × 0.083⌋ · final = หน้า + กลาง + หลัง (สกิลเพิ่ม status ไม่บวกซ้ำ) · บัฟที่เปิดในช่องสถานการณ์ยังบวกให้',
+    '<b>ยังไม่ได้ทำ:</b> C-Point ถูกหักเมื่อ stat bonus เกิน 2×Lv − 2 · สูตรบางสกิลอยู่ใน balance.pack ที่เข้ารหัส อาจต่างจาก PDF · กราฟ downtime ไม่รวม cast time'
   ].concat(cfg.notes||[]).map(n=>`<li>${n}</li>`).join('');
-  renderDetail();renderResults();renderAgi();renderDT();save();
+  $('hHead').textContent='หลัง · '+((S.sets[S.act]||{}).name||'');
+  renderDetail();renderResults();renderAgi();renderDT();renderPlan();save();
 }
 TT._t={load(key){R=build(key);loadState();return R},compute:()=>compute(),evalSkill:id=>evalSkill(id),canLearn:(id,o,l)=>canLearn(id,o,l)};
 if(!window.TT_NOBOOT)route();
