@@ -181,6 +181,8 @@ ul.assume b{color:var(--fg);font-weight:500}
 .stt .fn{font-family:var(--mono);font-size:15px;white-space:nowrap}
 .stt .fn b{color:var(--fg)}
 .stt .bb{display:block;font-size:10px;color:var(--good)}
+.stt .fh{color:var(--fg)}
+.lckc{color:var(--good);font-weight:600}
 </style>
 <div id="app"></div>
 <script>
@@ -294,7 +296,7 @@ const cw=()=>{const t=hi('ColossalWeapon',2);return t?[[0,'']]:[]};
 add('nAttack',{type:'-',cd:1.5,fixed:true,always:true,desc:'โจมตีปกติครั้งแรก (0.5 × atk) dmg และ 1 ko · ต่อด้วยคอมโบที่อัพไว้',
   calc:()=>{const it=[dmg('ครั้งที่ 1',{atk:0.5,mul:bs()})];if(has('Combo1'))it.push(dmg('ครั้งที่ 2',{atk:0.5,mul:bs()}));if(has('Combo2'))it.push(dmg('ครั้งที่ 3',{atk:0.6,mul:bs()}));
     if(has('Combo3')){it.push(dmg('Combo3 หมุนครั้งแรก',{atk:0.4,mul:bs(),aoe:1}));it.push(dmg('Combo3 หมุนครั้งที่ 2',{atk:0.5,mul:bs(),aoe:1}))}
-    const cwt=hi('ColossalWeapon',2);const notes=[];if(has('Combo3')){const p=25+(has('Combo4')?15:0)+[0,5,10,15][hi('ImprovedSwing',3)];notes.push(`โอกาสครั้งที่ 3 เป็นหมุน ${p}%`)}if(cwt)notes.push(`ColossalWeapon: กระจาย ${20*cwt}% effDmg ใส่ศัตรูรอบตัว 8 tm`);return{items:it,notes}}});
+    const cwt=hi('ColossalWeapon',2);const notes=[];if(has('Combo3')){const p=25+(has('Combo4')?15:0)+[0,5,10,15][hi('ImprovedSwing',3)];notes.push(`โอกาส ${p}% ที่ครั้งที่ 3 เป็นหมุน`)}if(cwt)notes.push(`ColossalWeapon: กระจาย ${20*cwt}% effDmg ใส่ศัตรูรอบตัว 8 tm`);return{items:it,notes}}});
 add('Combo1',{type:'Passive',desc:'โจมตีปกติครั้งที่ 2 (0.5 × atk) dmg และ 1 ko'});
 add('Combo2',{type:'Passive',desc:'โจมตีปกติครั้งที่ 3 (0.6 × atk) dmg และ 1 ko'});
 add('Combo3',{type:'Passive',desc:'โอกาส 25% เปลี่ยนครั้งที่ 3 เป็นหมุนรอบตัว 2 ครั้ง (0.4 × atk) และ (0.5 × atk)'});
@@ -409,15 +411,15 @@ add('ClumblingMountain1',{type:'Passive',desc:'ClimbingCliff ตอนมี sp 
 [[6,3,-4,10],[9,6,-6,12]].forEach(([d,e,mp,sp_],i)=>add('DrunkenFist'+(i+1),{mp,sp:sp_,cd:30,desc:`หมุนตัว (0.4 × atk) + talAdjust(${d}) แล้วหมัดเมา (0.4 × atk) + talAdjust(${e}) × 3`,buffs:X=>[X.hi('DrunkenPlus',2)?{n:'drunken'+X.hi('DrunkenPlus',2),b:12,pos:1}:null,X.has('DrunkenSpin')?{n:'drunk1',b:12,neg:1}:null],calc:()=>({items:[dmg('หมุนตัว',{atk:0.4,tal:d}),dmg('หมัดเมา',{atk:0.4,tal:e,n:3})].concat(sf())})}));
 [5,10].forEach((p,i)=>add('DrunkenPlus'+(i+1),{type:'Passive',desc:`DrunkenFist ทำให้เมา ดาเมจ −10% แต่โอกาสหลบ ${p}% (drunken${i+1}, 12 sec)`}));
 const tt=()=>[[has('TimeAndTide')?1.5:1,'TimeAndTide (ส่วน tal)']];
-[[10,5,12],[20,10,16]].forEach(([d,ko,sp_],i)=>add('WaterMonkey'+(i+1),{sp:sp_,cd:30,desc:`หมุนหลบแล้วชก (0.5 × atk) + talAdjust(${d}) × 2 และ ${ko} ko × 2 · หลบ 50%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2})].concat(sf())})}));
-[[10,14],[20,18]].forEach(([d,sp_],i)=>add('WaterCrane'+(i+1),{sp:sp_,cd:30,desc:`กระโดดหมุนเตะรอบตัว 4 tm (0.5 × atk) + talAdjust(${d}) × 2 · หลบ 50%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2,aoe:1})].concat(sf())})}));
+[[10,5,12],[20,10,16]].forEach(([d,ko,sp_],i)=>add('WaterMonkey'+(i+1),{sp:sp_,cd:30,desc:`หมุนหลบแล้วชก (0.5 × atk) + talAdjust(${d}) × 2 และ ${ko} ko × 2 · โอกาสหลบ 50%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2})].concat(sf())})}));
+[[10,14],[20,18]].forEach(([d,sp_],i)=>add('WaterCrane'+(i+1),{sp:sp_,cd:30,desc:`กระโดดหมุนเตะรอบตัว 4 tm (0.5 × atk) + talAdjust(${d}) × 2 · โอกาสหลบ 50%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d*(has('TimeAndTide')?1.5:1),n:2,aoe:1})].concat(sf())})}));
 [[10,-10,10,3],[15,-15,15,5]].forEach(([d,mp,sp_,du],i)=>add('StasisBlow'+(i+1),{mp,sp:sp_,cd:30,desc:`สะกัดจุด (0.4 × atk) + talAdjust(${d}) dmg · เป้าที่วิ่ง/ยืนนิ่งติด paralysis1 (${du} sec)`,buffs:[{n:'paralysis1',b:du,neg:1}],calc:()=>({items:[dmg('ดาเมจ',{atk:0.4,tal:d})].concat(sf())})}));
 [[15,20,-15,18],[25,40,-20,24]].forEach(([d,c,mp,sp_],i)=>add('DeathBlow'+(i+1),{mp,sp:sp_,cd:30,desc:`สะกัดจุดตาย (0.4 × atk) + talAdjust(${d}) dmg และโอกาส ((${c} / hp เป้าหมาย) × 100)% ตายทันที`,calc:()=>({items:[dmg('ดาเมจ',{atk:0.4,tal:d})].concat(sf())})}));
 [3,6,9,12].forEach((e,i)=>add('ShadowFist'+(i+1),{type:'Passive',desc:`โจมตีปกติและสาย B ซ้อนอีก 1 ครั้ง ${e} effDmg`}));
 [[-15,15],[-30,30]].forEach(([sp_,v],i)=>add('SpTransfer'+(i+1),{sp:sp_,cd:30,desc:`ถ่ายเท ${v} sp ให้เพื่อน`,calc:()=>({items:[info('sp ที่ให้',v+(has('HeavenBreath')?0.25*X.lvl:0),'sp',has('HeavenBreath')?'+ 25% Lv (HeavenBreath)':'')]})}));
 [100,150].forEach((h,i)=>add('SacredSageTechnic'+(i+1),{type:'Passive',desc:`ชาร์จฟื้น sp เกิน 100 เสีย sp ทั้งหมดและฟื้น ${h} hp อัตโนมัติ`,calc:()=>({items:[info('ฟื้น hp',h+(has('HeavenBreath')?2*X.lvl:0),'hp',has('HeavenBreath')?'+ 2 × Lv (HeavenBreath)':'')]})}));
-[[5,-20],[10,-24]].forEach(([d,sp_],i)=>add('Wind&Cloud'+(i+1),{mp:-10,sp:sp_,cd:120,desc:`มวยอ่อนรอบตัว 3 tm (0.4 × atk) + talAdjust(${d}) × 9 · หลบ 30%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.4,tal:d,n:9,aoe:1})].concat(sf())})}));
-[[15,-32],[30,-40]].forEach(([d,sp_],i)=>add('Rain&Storm'+(i+1),{mp:-15,sp:sp_,cd:180,desc:`หมุนเตะไปข้างหน้ารอบตัว 5 tm (0.65 × atk) + talAdjust(${d}) × 4 · หลบ 30%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.65,tal:d,n:4,aoe:1})].concat(sf())})}));
+[[5,-20],[10,-24]].forEach(([d,sp_],i)=>add('Wind&Cloud'+(i+1),{mp:-10,sp:sp_,cd:120,desc:`มวยอ่อนรอบตัว 3 tm (0.4 × atk) + talAdjust(${d}) × 9 · โอกาสหลบ 30%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.4,tal:d,n:9,aoe:1})].concat(sf())})}));
+[[15,-32],[30,-40]].forEach(([d,sp_],i)=>add('Rain&Storm'+(i+1),{mp:-15,sp:sp_,cd:180,desc:`หมุนเตะไปข้างหน้ารอบตัว 5 tm (0.65 × atk) + talAdjust(${d}) × 4 · โอกาสหลบ 30%`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.65,tal:d,n:4,aoe:1})].concat(sf())})}));
 [[30,-30],[50,-35]].forEach(([d,sp_],i)=>add('LotusPalm'+(i+1),{mp:-7,sp:sp_,cd:75,desc:`อัดคลื่นกระแทกจากระยะไกล (0.5 × atk) + talAdjust(${d}) dmg และ 5 ko (noForce1, 2 sec)`,buffs:[{n:'noForce1',b:2,pos:1}],calc:()=>({items:[dmg('ดาเมจ',{atk:0.5,tal:d})].concat(sf())})}));
 [[25,-60,4],[40,-75,6]].forEach(([d,sp_,r],i)=>add('HeavenPalm'+(i+1),{mp:-23,sp:sp_,cd:150,desc:`กระโดดอัดฝ่ามือ รัศมี ${r} tm (0.5 × atk) + talAdjust(${d}) × 4 (noForce1, 4 sec)`,buffs:[{n:'noForce1',b:4,pos:1}],calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d,n:4,aoe:1})].concat(sf())})}));
 [12,6].forEach((cd,i)=>add('MysticSage'+(i+1),{type:'Passive',cd,fixed:false,desc:`ได้รับดาเมจเกิน 100 ขณะ sp > sp ต้น ฟื้น hp 50% ของดาเมจที่ได้รับ (CD ${cd} วิ)`}));
@@ -428,7 +430,7 @@ P('nineSteps','ThreeStep และ RushingFalcon เพิ่มดาเมจ�
 P('DrunkenSpin','ศัตรูที่โดน DrunkenFist ติด drunk1 (ควบคุมกลับด้าน, 12 sec)');
 P('AuraField','ขณะชาร์จ เพื่อนรอบตัว 8 tm ฟื้น (0.015 × atk) sp/sec (min 1, max 3)',{calc:()=>({items:[info('ให้เพื่อน',Math.min(3,Math.max(1,0.015*X.st.atk)),'sp/s')]})});
 P('QiBurst','QiStrike ยิงเป็นเส้นตรง 6 tm และ delayQi +3 วิ');
-P('TimeAndTide','WaterMonkey และ WaterCrane ดาเมจส่วน tal +50% และหลบ +50%');
+P('TimeAndTide','WaterMonkey และ WaterCrane ดาเมจส่วน tal +50% และเพิ่มโอกาสหลบ 50%');
 add('RollAround',{mp:-6,sp:-24,cd:60,desc:'หลุดสถานะขังไม่เกินระดับ 5 กลิ้ง 6 วิ ป้องกันดาเมจปกติ effect damage และสถานะลบทั้งหมด (CD ร่วม Roll)',buffs:[{n:'rollAround',b:6,fixed:1}]});
 P('OgreImpact','Pummel กว้าง/ไกล +3/2 tm และ +(0.1 × atk) + talAdjust(5) × 5 · TowerRush ระยะ +3 tm และ +(0.25 × atk) + talAdjust(15)');
 P('WindWalker','StasisBlow/DeathBlow วาร์ปจากระยะ 6–16 tm ไปสะกัดจุดได้ทันที');
@@ -739,7 +741,7 @@ const bs=()=>[[has('BackStab')&&X.opt.back?2:1,'BackStab']];
 [[15,-14,18,60,5],[25,-20,24,66,10]].forEach(([d,mp,sp,cd,e],i)=>add('Bleed'+(i+1),{mp,sp,cd,desc:`ปามีดใส่จุดอ่อน (0.5 × atk) + talAdjust(${d}) dmg · bleed${i+1} 12 sec: วิ่งแล้วโดน ${e} effDmg/sec`,buffs:X=>[{n:'bleed'+(i+1),b:12+(X.has('OpenWound')?3:0),neg:1}],calc:()=>({items:[dmg('ดาเมจ',{atk:0.5,tal:d}),info('bleed ถ้าวิ่ง',e,'effDmg/s')].concat(wound())})}));
 [[25,-20],[35,-25]].forEach(([d,sp],i)=>add('MoonBlade'+(i+1),{mp:-10,sp,cd:90,desc:`วาดมีดแสงจันทร์รอบตัว (0.5 × atk) + talAdjust(${d}) × 2 ทำลายโล่ไม่เกินระดับ ${2+2*i}`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d,n:2,aoe:1})]})}));
 [[15,-30],[25,-40]].forEach(([d,sp],i)=>add('MoonStorm'+(i+1),{mp:-20,sp,cd:120,desc:`พายุแสงจันทร์ไปข้างหน้า 15 tm (0.5 × atk) + talAdjust(${d}) × 8`,calc:()=>({items:[dmg('ต่อฮิต',{atk:0.5,tal:d,n:8})]})}));
-[4,8,12].forEach((p,i)=>add('Evasion'+(i+1),{type:'Passive',desc:`โอกาส ${p}% หลบการโจมตี (${2*p}% ขณะวิ่ง)`}));
+[4,8,12].forEach((p,i)=>add('Evasion'+(i+1),{type:'Passive',desc:`โอกาส ${p}% หลบการโจมตี (โอกาส ${2*p}% ขณะวิ่ง)`}));
 add('Vendetta1',{type:'Passive',desc:'ได้ 10 sp ทุกครั้งที่หลบการโจมตี'});
 [[180,-45,120],[270,-60,180]].forEach(([d,sp,cd],i)=>add('DeltaStrike'+(i+1),{mp:-30,sp,cd,desc:`ตัดห้วงมิติสามเหลี่ยม (0.5 × atk) × 6 แล้วปิดท้าย (0.5 × atk) + talAdjust(${d}) · noForce1 และ lock1 3 sec (cha ไม่มีผล)`,buffs:[{n:'noForce1',b:3,fixed:1},{n:'lock1',b:3,fixed:1}],calc:()=>({items:[dmg('ตัด',{atk:0.5,n:6,aoe:1}),dmg('ปิดท้าย',{atk:0.5,tal:d,aoe:1})]})}));
 /* C */
@@ -950,7 +952,7 @@ options:[
  {id:'slayerHit',label:'Slayer โดนศัตรูประเภทตรง',type:'check',def:true,note:'×2'},
  {id:'mark',label:'เป้าหมายติด slayerMark',type:'check',def:false,note:'MarkofSlayer'}],
 hooks:{},
-derived:X=>{const c=chamCrit(X);return[['critical',c.p?`โอกาส ${c.p}% · +${c.bonus}% ดาเมจ`:'ยังไม่ได้อัพ CriticalPlus'],['quickShot',X.hi('quickShot',4)?`CD ${[1.5,1.2,0.9,0.6,0.3][X.hi('quickShot',4)]} วิ`:'CD 1.5 วิ']]},
+derived:X=>{const c=chamCrit(X);return[['critical',c.p?`โอกาส ${c.p}% (คิด lck แล้ว) · +${c.bonus}% ดาเมจ`:'ยังไม่ได้อัพ CriticalPlus'],['quickShot',X.hi('quickShot',4)?`CD ${[1.5,1.2,0.9,0.6,0.3][X.hi('quickShot',4)]} วิ`:'CD 1.5 วิ']]},
 notes:['<b>Chameleon:</b> critical คิดเฉพาะโจมตีปกติ: ดาเมจ × (1 + 1.8) หรือ × (1 + 2.4) กับ BullsEye · โหมดค่าเฉลี่ย = 1 + โอกาส × โบนัส',
  'FatalStrike บวกดาเมจตรงให้โจมตีปกติ 5 ครั้ง (ExtraArrows 10 ครั้ง, +1 ระดับ) · PiercingVenom +6 × poisonLv (DeadlyVenom 12 ×) ให้โจมตีปกติและท่าชาร์จ',
  'Slayer: ประเภทตรง ×2 · ImprovedSlayer บวกดาเมจเพิ่มตามขั้น · MarkofSlayer ให้ทุกเป้าหมายถือว่าประเภทตรง'],
@@ -1017,7 +1019,7 @@ P('DeadlyVenom','พิษระยะพื้นฐาน 18 วิ สะส�
 add('MarkofSlayer',{mp:-45,sp:-45,cd:150,cast:7,desc:'เป้าหมายรับดาเมจจาก Slayer/AllSlayer เหมือนประเภทตรง (slayerMark5, 30 sec)',buffs:[{n:'slayerMark5',b:30,neg:1}]});
 add('ThunderDragon',{mp:-50,sp:-50,cd:90,desc:'ห่อหุ้มสายฟ้า (3 sec, cha ไม่มีผล) ช็อตรอบตัว 3 tm 50 effDmg/0.5 sec โอกาส 12% paralysis1 · ศัตรูที่ตีโดนสวนกลับ 350 effDmg · cooldown เริ่มต้น 90 วิ',buffs:[{n:'thunderDragon',b:3,fixed:1}],calc:()=>({items:[eff('ต่อ 0.5 วิ (6 ครั้ง)',50,6),eff('สวนกลับต่อครั้ง',350)]})});
 }});
-function chamCrit(X){const t=X.hi('CriticalPlus',4),p=t?[8,12,16,20][t-1]:0,bonus=X.has('BullsEye5')?240:180;const m=X.opt.crit;
+function chamCrit(X){const t=X.hi('CriticalPlus',4),p=t?X.chance([8,12,16,20][t-1]):0,bonus=X.has('BullsEye5')?240:180;const m=X.opt.crit;
   if(!p||m==='none')return{p,bonus,mul:1,label:'crit'};if(m==='all')return{p,bonus,mul:1+bonus/100,label:'critical'};return{p,bonus,mul:1+p/100*bonus/100,label:`crit เฉลี่ย ${p}%`}}
 
 TT.def('whale',{
@@ -1310,19 +1312,20 @@ function blocker(id,own,lvl){const o2=new Set(own);o2.delete(id);for(const x of 
 function prune(own,lvl){let ch=true;while(ch){ch=false;for(const x of [...own]){if(R.SK[x].inTree&&!stOK(x,own,lvl)){own.delete(x);ch=true}}}}
 
 /* ---------------- compute ---------------- */
+function lckChance(n,lck){if(!(n>0))return n;if(n>=100)return 100;const num=n*(1+0.01*Math.min(512,Math.max(1,lck||0)));return Math.floor(100*num/(num-n+100)+1e-9)}
 function statFront(lvl,b){return Math.max(0,Math.floor((Math.max(1,lvl)-1)*(b+3)*0.083+1e-9))}
 function cdPct(agi,art){const b=art?88:100,v=b/(1+agi/128);return R.X.opt.floor==='floor'?Math.floor(v):v}
 function compute(){
   const {X,S,STAT_GROUPS,OPTS,cfg}=R;X.own=S.own;X.lvl=+S.lvl||1;
   OPTS.forEach(o=>{const v=S.opt[o.id];X.opt[o.id]=v===undefined?o.def:v});
   X.opt.enemies=Math.max(1,+X.opt.enemies||1);X.opt.defPct=Math.min(100,Math.max(0,+X.opt.defPct||0));
-  const st={},bon={},front={};STATS.forEach(k=>{const v=S.stat[k]||{};front[k]=statFront(X.lvl,+v.b||0);st[k]=front[k]+(+v.m||0)+(+v.h||0);bon[k]=0});X.front=front;
+  const st={},bon={},front={},growth={};STATS.forEach(k=>{const v=S.stat[k]||{};const g=statFront(X.lvl,+v.b||0);growth[k]=g;front[k]=(+v.b||0)+g;st[k]=front[k]+(+v.m||0)+(+v.h||0);bon[k]=0});X.front=front;X.growth=growth;
   [].forEach(g=>{let v=0;g.ids.forEach((id,i)=>{if(S.own.has(id))v=g.vals[i]});if(!v)return;
     (g.stat==='all'?STATS:[].concat(g.stat)).forEach(k=>{st[k]+=v;bon[k]+=v})});
   X.skillBon=bon;X.st=st;X.buffBon={};
   if(cfg.hooks&&cfg.hooks.stats){const before={...st};cfg.hooks.stats(st,X);STATS.forEach(k=>X.buffBon[k]=st[k]-before[k])}
   X.pct=cdPct(st.agi,S.own.has('RevisedArt'));
-  X.bmax=Math.max(0,Math.ceil(0.2*st.lck)-1);
+  X.bmax=Math.max(0,Math.ceil(0.2*st.lck)-1);X.chance=n=>lckChance(n,st.lck);
   return X;
 }
 function hook(n,...a){const h=R.cfg.hooks||{};return h[n]?h[n](...a):null}
@@ -1403,7 +1406,7 @@ function openChar(key){
 </header>
 <p class="sample" id="sampleTag" style="margin-top:12px">บิลด์ตัวอย่าง (สกิลและ status ที่ใส่ไว้เป็นแค่ตัวอย่าง) · กด Reset เพื่อเริ่มของคุณเอง</p>
 <div class="grid2 sec">
-  <section class="card"><h2>Status ตัวละคร</h2><p class="note" style="margin:-4px 0 8px">หน้า = ⌊(Lv − 1) × (Base + 3) × 0.083⌋ · กลาง/หลังกรอกเองได้เลย (รวมค่าจากสกิล + status ไว้ในนี้แล้ว ระบบไม่บวกเพิ่มให้)</p><div class="sttbl"><table class="stt"><thead><tr><th>Status</th><th>Base</th><th>หน้า</th><th>กลาง</th><th>หลัง</th><th>Final</th></tr></thead><tbody id="stats"></tbody></table></div><dl class="kv" id="derived"></dl></section>
+  <section class="card"><h2>Status ตัวละคร</h2><p class="note" style="margin:-4px 0 8px">Growth = ⌊(Lv − 1) × (Base + 3) × 0.083⌋ · หน้า = Base + Growth · กลาง/หลังกรอกเองได้เลย (รวมค่าจากสกิล + status ไว้ในนี้แล้ว ระบบไม่บวกเพิ่มให้)</p><div class="sttbl"><table class="stt"><thead><tr><th>Status</th><th>Base</th><th>Growth</th><th>หน้า</th><th>กลาง</th><th>หลัง</th><th>Final</th></tr></thead><tbody id="stats"></tbody></table></div><dl class="kv" id="derived"></dl></section>
   <section class="card"><h2>สถานการณ์การต่อสู้</h2><div class="opts" id="opts"></div></section>
 </div>
 <section class="sec treewrap"><div class="treecol"><div class="toolbar"><h2 style="margin:0">Skill Tree</h2><span class="note">คลิกซ้ายเพื่ออัพ/ยกเลิก · ชี้เพื่อดูรายละเอียด · คลิกขวา (หรือกดค้าง) เพื่อล็อกรายละเอียดไว้</span><span class="msg" id="msg" role="status"></span></div><div class="tree" id="tree"></div></div>
@@ -1442,7 +1445,7 @@ function optHTML(o,v){
 function wire(){
   const {S,OPTS}=R;
   $('lvl').value=S.lvl;$('lvl').addEventListener('input',e=>{S.lvl=Math.max(1,Math.min(100,+e.target.value||1));render()});
-  $('stats').innerHTML=STATS.map(k=>`<tr><th scope="row">${k}</th><td><input id="sb_${k}" type="number" min="0" aria-label="${k} base" value="${S.stat[k].b}"></td><td class="fr" id="sf_${k}"></td><td><input id="sm_${k}" type="number" aria-label="${k} กลาง" value="${S.stat[k].m}"></td><td><input id="sh_${k}" type="number" aria-label="${k} หลัง" value="${S.stat[k].h}"></td><td class="fn" id="fin_${k}"></td></tr>`).join('');
+  $('stats').innerHTML=STATS.map(k=>`<tr><th scope="row">${k}</th><td><input id="sb_${k}" type="number" min="0" aria-label="${k} base" value="${S.stat[k].b}"></td><td class="fr" id="sg_${k}"></td><td class="fr fh" id="sf_${k}"></td><td><input id="sm_${k}" type="number" aria-label="${k} กลาง" value="${S.stat[k].m}"></td><td><input id="sh_${k}" type="number" aria-label="${k} หลัง" value="${S.stat[k].h}"></td><td class="fn" id="fin_${k}"></td></tr>`).join('');
   STATS.forEach(k=>[['b','sb_'],['m','sm_'],['h','sh_']].forEach(([f,p])=>$(p+k).addEventListener('input',e=>{S.stat[k][f]=+e.target.value||0;S.sample=false;render()})));
   $('stats').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')e.target.select()});
   $('opts').innerHTML=OPTS.map(o=>optHTML(o,S.opt[o.id]===undefined?o.def:S.opt[o.id])).join('');
@@ -1492,6 +1495,7 @@ function markCur(){document.querySelectorAll('#tree .tile[data-id]').forEach(t=>
 function lockTo(id){R.S.cur=id;R.S.lock=true;renderDetail();markCur();save()}
 
 /* ---------------- detail ---------------- */
+function chanceText(t){const X=R.X;t=t.replace(/โอกาส \(\((\d+(?:\.\d+)?) \/ hp/g,(m,n)=>{const v=X.chance(+n);return v===+n?m:`โอกาส ((${n} → <b class="lckc" title="คิด lck ${f1(X.st.lck)}">${v}</b> / hp`});return t.replace(/(โอกาส[^\d%()<]{0,24}?)(\d+(?:\.\d+)?)%/g,(m,pre,n)=>{const v=X.chance(+n);return v===+n?m:`${pre}${n}% → <b class="lckc" title="คิด lck ${f1(X.st.lck)}">${v}%</b>`})}
 function durTxt(b){const base=f2(b.b+(b.plus||0));if(b.fixed)return `${esc(b.n)} ${f2(b.lo)} วิ (cha ไม่มีผล)`;
   const m=b.mul?` ×${f2(b.mul[0])} ${b.mul[1]}`:'';
   return Math.abs(b.hi-b.lo)<1e-9?`${esc(b.n)} ${base} → <b>${f2(b.lo)}</b> วิ${m}`:`${esc(b.n)} ${base} → <b>${f2(b.lo)}–${f2(b.hi)}</b> วิ${m}`}
@@ -1513,11 +1517,11 @@ function renderDetail(){
   if(r.hasDmg)lines.push(`<div class="r">รวมต่อการใช้${r.casts>1?` × ${r.casts} cast`:''}: <b>${r.totalMin<r.total-0.05?f1(r.totalMin)+'–':''}${f1(r.total)}</b></div>`);
   if(r.dps!=null)lines.push(`<div class="r">DPS = ${f1(r.total)} ÷ ${f2(r.cycle)} วิ ${r.span&&r.cycle>=r.span-1e-9&&r.span>r.cd?'(ระยะเวลาที่ดาเมจออก นานกว่า CD)':r.cycle>r.cd+1e-9?'(cast นานกว่า CD)':'(CD)'} ≈ <b>${f1(r.dps)}</b> ดาเมจ/วินาที</div>`);
   r.buffs.forEach(b=>lines.push(`<div class="r">สถานะ ${durTxt(b)}${b.fixed?'':` (cha ${X.st.cha}, bonus 0–${X.bmax})`}</div>`));
-  r.notes.forEach(n=>lines.push(`<div class="r">${n}</div>`));
+  r.notes.forEach(n=>lines.push(`<div class="r">${chanceText(String(n))}</div>`));
   const own=S.own.has(id);
   const rq=s.inTree?`<ul class="reqs">${reqList(id,S.own,S.lvl).filter(q=>!(own&&q.k==='pt')).map(q=>`<li><span class="${q.met?'ok':'no'}">${q.met?'✓':'✗'}</span><span class="lb">${q.label}</span><span>${esc(q.value)}</span></li>`).join('')}</ul>`:'';
   const lb=`<div class="lockbar${S.lock?' on':''}">${S.lock?`🔒 ล็อกรายละเอียดไว้ · คลิกขวาที่สกิลอื่นเพื่อเปลี่ยน <button type="button" id="unlock">ปลดล็อก</button>`:'ชี้ที่สกิลเพื่อดู · คลิกขวาเพื่อล็อก'}</div>`;
-  $('detail').innerHTML=lb+`<h3>${ICONS[id]?`<img src="${ICONS[id]}" alt="">`:''}${id}</h3><div class="meta">${chips.join('')}</div><p class="desc">${s.desc||''}</p>${rq}${lines.length?`<div class="math">${lines.join('')}</div>`:''}`;
+  $('detail').innerHTML=lb+`<h3>${ICONS[id]?`<img src="${ICONS[id]}" alt="">`:''}${id}</h3><div class="meta">${chips.join('')}</div><p class="desc">${chanceText(s.desc||'')}</p>${rq}${lines.length?`<div class="math">${lines.join('')}</div>`:''}`;
 }
 
 /* ---------------- results ---------------- */
@@ -1610,7 +1614,7 @@ window.addEventListener('resize',()=>{if(R&&R.S.dtOn)renderDT()});
 /* ---------------- main render ---------------- */
 function render(){
   if(!R)return;compute();const {S,SK,X,cfg,OPTS}=R;
-  STATS.forEach(k=>{const bb=X.buffBon[k]||0;$('sf_'+k).textContent=X.front[k];$('fin_'+k).innerHTML=`<b>${f1(X.st[k])}</b>${bb?`<span class="bb">${bb>0?'+':''}${f1(bb)} บัฟ</span>`:''}`});
+  STATS.forEach(k=>{const bb=X.buffBon[k]||0;$('sg_'+k).textContent=X.growth[k];$('sf_'+k).textContent=X.front[k];$('fin_'+k).innerHTML=`<b>${f1(X.st[k])}</b>${bb?`<span class="bb">${bb>0?'+':''}${f1(bb)} บัฟ</span>`:''}`});
   const cnt={basic:0,A:0,B:0,C:0};S.own.forEach(id=>{const s=SK[id];if(s&&s.inTree)cnt[s.cls]++});
   LINES.forEach(k=>$('n_'+k).textContent=cnt[k]+' สกิล');
   const P=points(S.own,S.lvl);
@@ -1620,7 +1624,7 @@ function render(){
   document.querySelectorAll('#tree .tile[data-id]').forEach(t=>{const id=t.dataset.id,on=S.own.has(id);t.classList.toggle('on',on);t.classList.toggle('cur',id===S.cur);t.classList.toggle('pin',!!S.lock&&id===S.cur);
     t.classList.toggle('lock',!on&&!canLearn(id,S.own,S.lvl));t.classList.toggle('bad',on&&S.lvl<SK[id].lv)});
   const extra=(cfg.derived?cfg.derived(X):[]).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('');
-  $('derived').innerHTML=`<dt>talAdjust</dt><dd>× ${f2(1+0.02*X.st.tal)}</dd><dt>CD เหลือ</dt><dd>${f2(X.pct)}%${S.own.has('RevisedArt')?' (RevisedArt)':''}</dd><dt>ระยะสถานะ (cha)</dt><dd>× ${f2(1+0.015*X.st.cha)} – ${f2(1+0.015*(X.st.cha+X.bmax))} (bonus 0–${X.bmax})</dd>${extra}`;
+  $('derived').innerHTML=`<dt>talAdjust</dt><dd>× ${f2(1+0.02*X.st.tal)}</dd><dt>CD เหลือ</dt><dd>${f2(X.pct)}%${S.own.has('RevisedArt')?' (RevisedArt)':''}</dd><dt>โอกาส (lck ${f1(X.st.lck)})</dt><dd>10% → ${X.chance(10)}% · 20% → ${X.chance(20)}% · 50% → ${X.chance(50)}%</dd><dt>ระยะสถานะ (cha)</dt><dd>× ${f2(1+0.015*X.st.cha)} – ${f2(1+0.015*(X.st.cha+X.bmax))} (bonus 0–${X.bmax})</dd>${extra}`;
   OPTS.forEach(o=>{const n=$('o_'+o.id+'_n');if(n)n.textContent=o.warn?(o.warn(X)||''):''});
   $('sampleTag').hidden=!S.sample;$('unpin').hidden=!S.pin;$('pinNote').textContent=S.pin?`กำลังเทียบกับ: ${S.pinLabel}`:'';
   $('notes').innerHTML=[
@@ -1628,7 +1632,8 @@ function render(){
     '<b>CD เหลือ%</b> = 100 / (1 + agi/128) · มี RevisedArt ใช้ 88 แทน 100 · สกิลที่ระบุ “agi ไม่มีผล” ใช้ CD เดิม และ RevisedArt ไม่มีผล',
     '<b>ระยะสถานะ</b> = base × (1 + 0.015 × (cha + bonus)), bonus สุ่ม 0 ถึง ⌈0.2×lck⌉−1 · สถานะที่ระบุ “cha ไม่มีผล” ใช้ค่าเดิม',
     '<b>Cast</b> = cast พื้นฐาน (หลังโบนัสเฉพาะตัว) − ⌊int/4⌋ × 0.125 วิ (ต่ำสุด 0) · <b>DPS</b> = ดาเมจรวมต่อการใช้ ÷ max(CD final, cast) · cooldown เริ่มนับทันทีที่กดสกิล ระหว่างร่ายจึงนับ CD ไปพร้อมกัน (ยืนยันแล้ว)',
-    '<b>Status final</b> = หน้า ⌊(Lv − 1) × (Base + 3) × 0.083⌋ + กลาง + หลัง (สกิลเพิ่มสเตตัสไม่ถูกบวกซ้ำ กรอกรวมไว้ในกลาง/หลังแล้ว) · บัฟที่เปิดในช่องสถานการณ์ยังบวกให้ · <b>effDmg</b> ไม่คูณ tal / def / โบนัสดาเมจ',
+    '<b>โอกาส %</b> (ทุกสกิล): num = n × (1 + 0.01 × clamp(lck, 1, 512)) · ผล = ⌊100 × num / (num − n + 100)⌋ · ใช้กับทุกโอกาส % ในคำอธิบายสกิล (รวมโอกาสหลบ, ติดสถานะ, ฟื้นคืนชีพ, critical และตัวตั้งของ DeathBlow) ยกเว้นสกิลที่ PDF ให้สูตร lck แยก (TruceTrading, GrandCasinoArcade)',
+    '<b>Status final</b> = หน้า (Base + Growth ⌊(Lv − 1) × (Base + 3) × 0.083⌋) + กลาง + หลัง (สกิลเพิ่มสเตตัสไม่ถูกบวกซ้ำ กรอกรวมไว้ในกลาง/หลังแล้ว) · บัฟที่เปิดในช่องสถานการณ์ยังบวกให้ · <b>effDmg</b> ไม่คูณ tal / def / โบนัสดาเมจ',
     '<b>ยังไม่มีสูตร:</b> การหักด้วย def เป้าหมายและผลของ lck ต่อดาเมจ (ใช้ช่อง % ลดดาเมจแทนไปก่อน) · กราฟ downtime: สถานะติดหลังร่ายเสร็จทั้งรอบนี้และรอบหน้า cast จึงหักล้างกัน downtime = CD − ระยะสถานะ'
   ].concat(cfg.notes||[]).map(n=>`<li>${n}</li>`).join('');
   renderDetail();renderResults();renderAgi();renderDT();save();
