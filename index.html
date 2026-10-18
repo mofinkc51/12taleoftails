@@ -234,6 +234,8 @@ details.code code{font-family:var(--mono);font-size:11.5px}
 details.code .s{color:var(--muted)}
 .bp{color:var(--bad);font-weight:600}
 .cfw{display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;border-radius:50%;font-size:10px;color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 50%,var(--line));margin-left:4px;vertical-align:middle;font-family:var(--body)}
+
+.sbn{display:block;font-size:11px;color:var(--good);line-height:1.1;text-align:center;min-height:0}
 </style>
 <div id="app"></div>
 <script>
@@ -1414,7 +1416,7 @@ function compute(){
   const {X,S,STAT_GROUPS,OPTS,cfg}=R;X.own=S.own;X.lvl=+S.lvl||1;
   OPTS.forEach(o=>{const v=S.opt[o.id];X.opt[o.id]=v===undefined?o.def:v});
   X.opt.enemies=Math.max(1,+X.opt.enemies||1);
-  const st={},bon={},front={},growth={};STATS.forEach(k=>{const v=S.stat[k]||{};const g=statFront(Math.min(95,X.lvl),+v.b||0);growth[k]=g;front[k]=(+v.b||0)+g;st[k]=front[k]+(+v.m||0)+(S.sets?(+((S.sets[S.act]||S.sets[0]).v[k])||0):(+v.h||0));bon[k]=0});X.front=front;X.growth=growth;
+  const st={},bon={},front={},growth={},startB={};STATS.forEach(k=>{const v=S.stat[k]||{};const g=statFront(Math.min(95,X.lvl),+v.b||0);growth[k]=g;front[k]=(+v.b||0)+g;const sb=(v.s==null||v.s==='')?0:(+v.s||0)-(+v.b||0);startB[k]=sb;st[k]=front[k]+sb+(+v.m||0)+(S.sets?(+((S.sets[S.act]||S.sets[0]).v[k])||0):(+v.h||0));bon[k]=0});X.front=front;X.growth=growth;X.startB=startB;
   [].forEach(g=>{let v=0;g.ids.forEach((id,i)=>{if(S.own.has(id))v=g.vals[i]});if(!v)return;
     (g.stat==='all'?STATS:[].concat(g.stat)).forEach(k=>{st[k]+=v;bon[k]+=v})});
   X.skillBon=bon;X.st=st;X.buffBon={};
@@ -1475,10 +1477,10 @@ function sampleOwn(cfg){const o=new Set(),sm=cfg.sample||{},lvl=sm.lvl||70;let c
   while(ch){ch=false;(sm.own||[]).forEach(id=>{if(!o.has(id)&&R.SK[id]&&canLearn(id,o,lvl)){o.add(id);ch=true}})}return o}
 function loadState(){
   const cfg=R.cfg,sm=cfg.sample||{};
-  const sb=Object.assign({atk:30,def:20,agi:60,vit:30,int:30,cha:30,tal:50,lck:20},sm.base||{}),stat={},GB=gameBase();STATS.forEach((k,i)=>stat[k]={b:GB[i],m:sb[k],h:0});
+  const sb=Object.assign({atk:30,def:20,agi:60,vit:30,int:30,cha:30,tal:50,lck:20},sm.base||{}),stat={},GB=gameBase();STATS.forEach((k,i)=>stat[k]={b:GB[i],s:GB[i],m:sb[k],h:0});
   const S={lvl:sm.lvl||70,stat,own:null,opt:{},cur:null,filt:'sel',pin:null,sample:true,dtOn:false,dtSkill:cfg.defaultDT||null,dtAgiMax:300,dtChaMax:600};
   R.S=S;S.own=sampleOwn(cfg);
-  try{const raw=localStorage.getItem('tt4:'+R.key);if(raw){const o=JSON.parse(raw);if(!o.stat&&o.base){o.stat={};STATS.forEach(k=>o.stat[k]={b:0,m:+o.base[k]||0,h:0})}delete o.base;Object.assign(S,o,{own:new Set((o.own||[]).filter(x=>R.SK[x])),pin:null});STATS.forEach(k=>{S.stat[k]=Object.assign({b:0,m:0,h:0},S.stat[k]||{})});if(o.v!==5)STATS.forEach((k,i)=>S.stat[k].b=gameBase()[i])}}catch(e){}
+  try{const raw=localStorage.getItem('tt4:'+R.key);if(raw){const o=JSON.parse(raw);if(!o.stat&&o.base){o.stat={};STATS.forEach(k=>o.stat[k]={b:0,m:+o.base[k]||0,h:0})}delete o.base;Object.assign(S,o,{own:new Set((o.own||[]).filter(x=>R.SK[x])),pin:null});STATS.forEach(k=>{S.stat[k]=Object.assign({b:0,m:0,h:0},S.stat[k]||{})});STATS.forEach((k,i)=>{const g=gameBase()[i];S.stat[k].b=g;if(S.stat[k].s==null)S.stat[k].s=g})}}catch(e){}
   setsInit(S);
   {const n=S.own.size;prune(S.own,S.lvl);S.pruned=n-S.own.size}
   S.cur=S.cur&&R.SK[S.cur]?S.cur:(cfg.focus||R.ORDER.find(id=>R.SK[id].calc&&R.SK[id].inTree)||R.ORDER[0]);
@@ -1518,7 +1520,7 @@ function openChar(key){
 </header>
 <p class="sample" id="sampleTag" style="margin-top:12px">บิลด์ตัวอย่าง (สกิลและ status ที่ใส่ไว้เป็นแค่ตัวอย่าง) · กด Reset เพื่อเริ่มของคุณเอง</p>
 <div class="grid2 sec">
-  <section class="card"><h2>Status ตัวละคร</h2><p class="note" style="margin:-4px 0 8px">Base = ค่าพื้นฐานของเผ่าจากโค้ดเกม · Growth = ⌊(min(Lv,95) − 1) × (Base + 3) × 0.083⌋ · หน้า = Base + Growth · กลาง = แต้ม status ที่ลงเอง (ใช้คิด C-Point) · หลัง = อุปกรณ์ของเซ็ตที่ใช้งาน</p><div class="sttbl"><table class="stt"><thead><tr><th>Status</th><th>Base</th><th>Growth</th><th>หน้า</th><th>กลาง</th><th id="hHead">หลัง</th><th>Final</th></tr></thead><tbody id="stats"></tbody></table></div><dl class="kv" id="derived"></dl></section>
+  <section class="card"><h2>Status ตัวละคร</h2><p class="note" style="margin:-4px 0 8px">Base = ค่าพื้นฐานของเผ่าจากโค้ดเกม · Growth = ⌊(min(Lv,95) − 1) × (Base + 3) × 0.083⌋ · เริ่มเกม = ค่า status ตอนสร้างตัว (ส่วนที่เกิน Base บวกเข้า Final ตรงๆ ไม่เข้าสูตร Growth) · หน้า = Base + Growth · กลาง = แต้ม status ที่ลงเอง (ใช้คิด C-Point) · หลัง = อุปกรณ์ของเซ็ตที่ใช้งาน</p><div class="sttbl"><table class="stt"><thead><tr><th>Status</th><th>Base</th><th>เริ่มเกม</th><th>Growth</th><th>หน้า</th><th>กลาง</th><th id="hHead">หลัง</th><th>Final</th></tr></thead><tbody id="stats"></tbody></table></div><dl class="kv" id="derived"></dl></section>
   <section class="card"><h2>สถานการณ์การต่อสู้</h2><div class="opts" id="opts"></div></section>
 </div>
 ${plannerHTML()}
@@ -1558,8 +1560,8 @@ function optHTML(o,v){
 function wire(){
   const {S,OPTS}=R;
   $('juti').value=S.juti??'';$('juti').addEventListener('input',e=>{S.juti=e.target.value===''?null:Math.max(0,+e.target.value||0);render()});$('lvl').value=S.lvl;$('lvl').addEventListener('input',e=>{S.lvl=Math.max(1,Math.min(100,+e.target.value||1));render()});
-  $('stats').innerHTML=STATS.map(k=>`<tr><th scope="row">${k}</th><td><input id="sb_${k}" type="number" min="0" aria-label="${k} base" value="${S.stat[k].b}"></td><td class="fr" id="sg_${k}"></td><td class="fr fh" id="sf_${k}"></td><td><input id="sm_${k}" type="number" aria-label="${k} กลาง" value="${S.stat[k].m}"></td><td><input id="sh_${k}" type="number" aria-label="${k} หลัง" value="${gearOf(S.act,k)}"></td><td class="fn" id="fin_${k}"></td></tr>`).join('');
-  STATS.forEach(k=>[['b','sb_'],['m','sm_'],['h','sh_']].forEach(([f,p])=>$(p+k).addEventListener('input',e=>{const v=+e.target.value||0;if(f==='h'){S.sets[S.act].v[k]=v;renderSets()}else S.stat[k][f]=v;S.sample=false;render()})));
+  $('stats').innerHTML=STATS.map(k=>`<tr><th scope="row">${k}</th><td class="fr">${S.stat[k].b}</td><td><input id="ss_${k}" type="number" min="0" aria-label="${k} เริ่มเกม" value="${S.stat[k].s}"><span class="sbn" id="sbn_${k}"></span></td><td class="fr" id="sg_${k}"></td><td class="fr fh" id="sf_${k}"></td><td><input id="sm_${k}" type="number" aria-label="${k} กลาง" value="${S.stat[k].m}"></td><td><input id="sh_${k}" type="number" aria-label="${k} หลัง" value="${gearOf(S.act,k)}"></td><td class="fn" id="fin_${k}"></td></tr>`).join('');
+  STATS.forEach(k=>[['s','ss_'],['m','sm_'],['h','sh_']].forEach(([f,p])=>$(p+k).addEventListener('input',e=>{const v=+e.target.value||0;if(f==='h'){S.sets[S.act].v[k]=v;renderSets()}else S.stat[k][f]=v;S.sample=false;render()})));
   $('stats').addEventListener('focusin',e=>{if(e.target.tagName==='INPUT')e.target.select()});
   $('opts').innerHTML=OPTS.map(o=>optHTML(o,S.opt[o.id]===undefined?o.def:S.opt[o.id])).join('');
   OPTS.forEach(o=>{const el=$('o_'+o.id);el.addEventListener(o.type==='number'?'input':'change',()=>{S.opt[o.id]=o.type==='check'?el.checked:o.type==='number'?(+el.value||0):el.value;render()})});
@@ -1568,7 +1570,7 @@ function wire(){
   $('detail').addEventListener('click',e=>{if(e.target.id==='unlock'){R.S.lock=false;renderDetail();markCur();save()}});
   $('detail').addEventListener('toggle',e=>{if(e.target.matches('details.code')){R.S.codeOpen=e.target.open;save()}},true);
   const hdr=document.querySelector('header.top');const setH=()=>document.documentElement.style.setProperty('--hdr',hdr.offsetHeight+'px');setH();if(window.ResizeObserver)new ResizeObserver(setH).observe(hdr);
-  $('resetAll').addEventListener('click',()=>{S.own.clear();STATS.forEach((k,i)=>{S.stat[k]={b:gameBase()[i],m:0,h:0};S.sets.forEach(st=>st.v[k]=0);['sm_','sh_'].forEach(p=>$(p+k).value=0);$('sb_'+k).value=gameBase()[i]});renderSets();S.lvl=1;$('lvl').value=1;S.sample=false;S.pin=null;render()});
+  $('resetAll').addEventListener('click',()=>{S.own.clear();STATS.forEach((k,i)=>{S.stat[k]={b:gameBase()[i],s:gameBase()[i],m:0,h:0};S.sets.forEach(st=>st.v[k]=0);['sm_','sh_'].forEach(p=>$(p+k).value=0);$('ss_'+k).value=gameBase()[i]});renderSets();S.lvl=1;$('lvl').value=1;S.sample=false;S.pin=null;render()});
   $('filt').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.filt=b.dataset.f;renderResults();save()});
   $('res').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]');if(tr){S.cur=tr.dataset.id;S.lock=true;renderDetail();markCur();save();$('detail').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})}});
   $('pin').addEventListener('click',()=>{compute();S.pin={};R.ORDER.forEach(id=>{const r=evalSkill(id);S.pin[id]={total:r.hasDmg?r.total:null,cd:r.cd??null,dps:r.dps}});const st=R.X.st;S.pinLabel=`Lv ${S.lvl} · atk ${st.atk} · agi ${st.agi} · tal ${st.tal} · cha ${st.cha}`;render()});
@@ -1757,7 +1759,7 @@ function setsInit(S){
 }
 const gearOf=(si,k)=>{const s=R.S.sets[si]||R.S.sets[0];return +s.v[k]||0};
 /* final stat (no situational buffs) in set si with mid allocation mid */
-function finalIn(si,k,mid){const X=R.X;return X.front[k]+(mid[k]||0)+gearOf(si,k)}
+function finalIn(si,k,mid){const X=R.X;return X.front[k]+(X.startB[k]||0)+(mid[k]||0)+gearOf(si,k)}
 /* evaluate skill under alternative stats: temporarily swap */
 function withStats(si,mid,fn){const S=R.S,saveAct=S.act,saveM={};STATS.forEach(k=>{saveM[k]=S.stat[k].m;S.stat[k].m=mid[k]||0});S.act=si;compute();let out;try{out=fn()}finally{S.act=saveAct;STATS.forEach(k=>S.stat[k].m=saveM[k]);compute()}return out}
 function minStatFor(si,mid,k,test,max=1500){/* smallest final value of stat k in set si s.t. test() true; returns {need,ok} */
@@ -1858,7 +1860,7 @@ function wirePlanner(){
 /* ---------------- main render ---------------- */
 function render(){
   if(!R)return;compute();const {S,SK,X,cfg,OPTS}=R;
-  STATS.forEach(k=>{const bb=X.buffBon[k]||0;$('sg_'+k).textContent=X.growth[k];$('sf_'+k).textContent=X.front[k];$('fin_'+k).innerHTML=`<b>${f1(X.st[k])}</b>${bb?`<span class="bb">${bb>0?'+':''}${f1(bb)} บัฟ</span>`:''}`});
+  STATS.forEach(k=>{const bb=X.buffBon[k]||0;$('sg_'+k).textContent=X.growth[k];{const d=X.startB[k]||0;$('sbn_'+k).textContent=d?(d>0?'+':'')+d:''};$('sf_'+k).textContent=X.front[k];$('fin_'+k).innerHTML=`<b>${f1(X.st[k])}</b>${bb?`<span class="bb">${bb>0?'+':''}${f1(bb)} บัฟ</span>`:''}`});
   const cnt={basic:0,A:0,B:0,C:0};S.own.forEach(id=>{const s=SK[id];if(s&&s.inTree)cnt[s.cls]++});
   LINES.forEach(k=>$('n_'+k).textContent=cnt[k]+' สกิล');
   const P=points(S.own,S.lvl);
